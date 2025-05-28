@@ -2,26 +2,26 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Button = styled.button`
-  background-color: #3BA3FF;
-  width: 300px;
+  border: solid 1px #7F7F81;
   border-radius: 20px;
-  color: white;
+  width: 300px;
   height: 40px;
+  color: #3BA3FF;
   text-align: center;
-  border: none;
-  font-weight: bold;
+  background: black;
   font-size: 15px;
+  font-weight: bold;
   cursor: pointer;
   &: hover {
-  background-color: #3496D8;
+  background-color: #1B1B1B;
 `
 
-export function Account_making({open}) {
+export const LoginIcon = () => {
 
 
   return (
-    <Button onClick={open}>
-      アカウントを作成
+    <Button>
+      ログイン
     </Button>
   )
 }

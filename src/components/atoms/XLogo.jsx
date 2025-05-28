@@ -11,7 +11,7 @@ const Image = styled.div`
   justify-content: center;
 `
 
-export const X_logo = ({width, height, box_height}) => {
+export const XLogo = ({width, height, box_height}) => {
 
   return (
     <Image>

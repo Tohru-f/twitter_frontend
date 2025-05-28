@@ -17,7 +17,7 @@ const Button = styled.button`
   }
 `
 
-export function Google_button() {
+export function GoogleIcon() {
 
 
   return (

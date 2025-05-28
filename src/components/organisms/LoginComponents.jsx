@@ -1,9 +1,9 @@
 import React from 'react'
-import { Google_button } from '../atoms/google_button'
-import { Apple_button } from '../atoms/Apple_button'
-import { Account_making } from '../atoms/Account_making'
-import { Explanation_agreement } from '../atoms/Explanation_agreement'
-import { Login_button } from '../atoms/Login_button'
+import { GoogleIcon } from '../atoms/GoogleIcon'
+import { AppleIcon } from '../atoms/AppleIcon'
+import { AccountMaking } from '../atoms/AccountMaking'
+import { ExplanationAgreement } from '../atoms/ExplanationAgreement'
+import { LoginIcon } from '../atoms/LoginIcon'
 import styled from 'styled-components'
 import { Or } from "../atoms/Or"
 
@@ -33,21 +33,21 @@ const Specialized_h3 = styled.h3`
   color: white;
 `
 
-export const Login_components = ({open}) => {
+export const LoginComponents = ({open}) => {
 
 
   return (
     <Components>
       <Specialized_h1>すべての話題が、ここに。</Specialized_h1>
       <Specialized_h2>今すぐ参加しましょう。</Specialized_h2>
-      <Google_button />
-      <Apple_button />
+      <GoogleIcon />
+      <AppleIcon />
       <Or />
-      <Account_making open={open} />
-      <Explanation_agreement/>
+      <AccountMaking open={open} />
+      <ExplanationAgreement/>
       <br />
       <Specialized_h3>アカウントをお持ちの場合</Specialized_h3>
-      <Login_button/>
+      <LoginIcon/>
     </Components>
   )
 }

@@ -17,7 +17,7 @@ const Button = styled.button`
   background-color: #E1E3E1;
 `
 
-export function Apple_button() {
+export function AppleIcon() {
 
 
   return (

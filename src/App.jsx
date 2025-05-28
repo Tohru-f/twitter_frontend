@@ -1,11 +1,11 @@
-import { Login_pages } from "./components/pages/Login_pages"
+import { LoginPages } from "./components/pages/LoginPages"
 
 
 function App() {
 
   return (
     <>
-      <Login_pages/>
+      <LoginPages/>
     </>
   )
 }

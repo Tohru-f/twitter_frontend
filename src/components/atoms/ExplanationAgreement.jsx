@@ -9,7 +9,7 @@ const Tag = styled.div`
   margin-top: 10px
 `
 
-export const Explanation_agreement = () => {
+export const ExplanationAgreement = () => {
 
 
   return (
