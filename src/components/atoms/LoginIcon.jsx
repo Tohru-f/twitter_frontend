@@ -1,5 +1,5 @@
-import React from 'react'
-import styled from 'styled-components'
+import React from "react";
+import styled from "styled-components";
 
 const Button = styled.button`
   border: solid 1px #7F7F81;
@@ -14,14 +14,8 @@ const Button = styled.button`
   cursor: pointer;
   &: hover {
   background-color: #1B1B1B;
-`
+`;
 
-export const LoginIcon = () => {
-
-
-  return (
-    <Button>
-      ログイン
-    </Button>
-  )
-}
+export const LoginIcon = ({ open }) => {
+  return <Button onClick={open}>ログイン</Button>;
+};

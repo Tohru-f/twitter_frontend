@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { XLogo } from "../atoms/XLogo";
 import { FloatingInput } from "../molecules/FloatingInput";
 import axios from "axios";
+import AxiosBaseService from "../../services/AxiosBaseService";
+import { useNavigate } from "react-router-dom";
 
 const Modal = styled.div`
   position: fixed;
@@ -35,7 +37,7 @@ const Button = styled.button`
   width: 75%;
   height: 60px;
   border-radius: 9999px;
-  background-color: #8a8a94;
+  background-color: white;
   color: black;
   font-size: 17px;
   font-weight: bold;
@@ -51,13 +53,10 @@ const Title = styled.span`
   height: 75px;
 `;
 
-export const RegistrationModal = ({ show, close }) => {
+export const LoginModal = ({ show, close }) => {
   let defaultUser = {
-    phone_number: "",
     email: "",
-    birthday: "",
     password: "",
-    password_confirmation: "",
   };
 
   const [user, setUser] = useState(defaultUser);
@@ -71,18 +70,24 @@ export const RegistrationModal = ({ show, close }) => {
     });
   };
 
-  const handleSignUp = async () => {
+  const navigate = useNavigate();
+
+  const handleSignIn = async () => {
     try {
-      const response = await axios.post("/users", {
-        phone_number: user.phone_number,
+      const response = await axios.post("/users/sign_in", {
         email: user.email,
-        birthday: user.birthday,
         password: user.password,
-        password_confirmation: user.password_confirmation,
-        confirm_success_url: "http://localhost:5173",
       });
       console.log(response.data);
+      console.log(response.headers);
       setUser(defaultUser);
+      if (response.status === 200) {
+        console.log("Signed in successfully!");
+        localStorage.setItem("access-token", response.headers["access-token"]);
+        localStorage.setItem("client", response.headers.client);
+        localStorage.setItem("uid", response.headers.uid);
+        navigate("/main");
+      }
     } catch (error) {
       console.error(error.response.data.errors);
     }
@@ -105,26 +110,12 @@ export const RegistrationModal = ({ show, close }) => {
       {show && (
         <Modal>
           <XLogo width="28px" height="26px" box_height="53px" />
-          <Title>アカウントを作成</Title>
-          <FloatingInput
-            type="text"
-            label="電話番号"
-            name="phone_number"
-            value={user.phone_number}
-            onChange={handleUserChange}
-          />
+          <Title>Xにログイン</Title>
           <FloatingInput
             type="text"
             label="メールアドレス"
             name="email"
             value={user.email}
-            onChange={handleUserChange}
-          />
-          <FloatingInput
-            type="text"
-            label="生年月日"
-            name="birthday"
-            value={user.birthday}
             onChange={handleUserChange}
           />
           <FloatingInput
@@ -134,14 +125,7 @@ export const RegistrationModal = ({ show, close }) => {
             value={user.password}
             onChange={handleUserChange}
           />
-          <FloatingInput
-            type="password"
-            label="パスワード(確認用)"
-            name="password_confirmation"
-            value={user.password_confirmation}
-            onChange={handleUserChange}
-          />
-          <Button onClick={handleSignUp}>登録</Button>
+          <Button onClick={handleSignIn}>ログイン</Button>
         </Modal>
       )}
     </>
