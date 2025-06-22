@@ -1,6 +1,6 @@
-import React from 'react'
-import styled from 'styled-components'
-import Apple_icon from "../../assets/apple_icon.png"
+import React from "react";
+import styled from "styled-components";
+import AppleIconImage from "../../assets/apple_icon.png";
 
 const Button = styled.button`
   background-color: white;
@@ -15,15 +15,13 @@ const Button = styled.button`
   cursor: pointer;
   &: hover {
   background-color: #E1E3E1;
-`
+`;
 
 export function AppleIcon() {
-
-
   return (
     <Button>
-      <img src={Apple_icon} alt="apple_icon" />
+      <img src={AppleIconImage} alt="apple_icon" />
       Appleのアカウントで登録
     </Button>
-  )
+  );
 }

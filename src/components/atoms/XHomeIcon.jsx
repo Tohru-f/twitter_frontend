@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import XHome_icon from "../../assets/logo-white.png";
+import XHomeIconImage from "../../assets/logo-white.png";
 
 const Button = styled.button`
   background-color: black;
@@ -27,7 +27,7 @@ const Button = styled.button`
 export const XHomeIcon = () => {
   return (
     <Button>
-      <img src={XHome_icon} alt="home" width="24px" height="24px" />
+      <img src={XHomeIconImage} alt="home" width="24px" height="24px" />
     </Button>
   );
 };

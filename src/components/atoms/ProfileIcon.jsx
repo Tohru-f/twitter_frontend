@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Profile_icon from "../../assets/profile.png";
+import ProfileIconImage from "../../assets/profile.png";
 
 const Button = styled.button`
   background-color: black;
@@ -29,7 +29,7 @@ const Span = styled.span`
 export const ProfileIcon = () => {
   return (
     <Button>
-      <img src={Profile_icon} alt="home" width="30px" height="30px" />
+      <img src={ProfileIconImage} alt="home" width="30px" height="30px" />
       <Span>プロフィール</Span>
     </Button>
   );

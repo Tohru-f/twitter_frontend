@@ -5,9 +5,9 @@ import { NotificationIcon } from "../atoms/NotificationIcon";
 import { MessageIcon } from "../atoms/MessageIcon";
 import { BookmarkIcon } from "../atoms/BookmarkIcon";
 import { ProfileIcon } from "../atoms/ProfileIcon";
-import { PostIcon } from "../atoms/PostIcon";
 import { XHomeIcon } from "../atoms/XHomeIcon";
 import { SignOutIcon } from "../atoms/SignOutIcon";
+import { RaisePostModalIcon } from "../atoms/RaisePostModalIcon";
 
 const SideSpace = styled.div`
   background-color: black;
@@ -22,7 +22,7 @@ const SidePart = styled.div`
   width: 45%;
 `;
 
-export const SideBar = () => {
+export const SideBar = ({ openPostModalHandler }) => {
   return (
     <SideSpace>
       <SidePart>
@@ -32,7 +32,10 @@ export const SideBar = () => {
         <MessageIcon />
         <BookmarkIcon />
         <ProfileIcon />
-        <PostIcon />
+        <RaisePostModalIcon
+          width="200px"
+          openPostModalHandler={openPostModalHandler}
+        />
         <SignOutIcon />
       </SidePart>
     </SideSpace>

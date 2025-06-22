@@ -5,6 +5,7 @@ import { FloatingInput } from "../molecules/FloatingInput";
 import axios from "axios";
 import AxiosBaseService from "../../services/AxiosBaseService";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 const Modal = styled.div`
   position: fixed;
@@ -54,6 +55,7 @@ const Title = styled.span`
 `;
 
 export const LoginModal = ({ show, close }) => {
+  // userの初期データとして生成
   let defaultUser = {
     email: "",
     password: "",
@@ -61,6 +63,7 @@ export const LoginModal = ({ show, close }) => {
 
   const [user, setUser] = useState(defaultUser);
 
+  // ログイン情報の入力対応処理、nameにはカラム(email, password)がvalueには入力値が入る
   const handleUserChange = (e) => {
     const { name, value } = e.target;
 
@@ -74,25 +77,35 @@ export const LoginModal = ({ show, close }) => {
 
   const handleSignIn = async () => {
     try {
+      // 入力が空の場合は送信処理を止めて入力を促す
+      if (user.email === "" || user.password === "") {
+        toast.error("Email及びパスワードを両方入力してください。");
+        return;
+      }
       const response = await axios.post("/users/sign_in", {
         email: user.email,
         password: user.password,
       });
       console.log(response.data);
       console.log(response.headers);
-      setUser(defaultUser);
       if (response.status === 200) {
         console.log("Signed in successfully!");
+        setUser(defaultUser);
         localStorage.setItem("access-token", response.headers["access-token"]);
         localStorage.setItem("client", response.headers.client);
         localStorage.setItem("uid", response.headers.uid);
         navigate("/main");
       }
     } catch (error) {
-      console.error(error.response.data.errors);
+      if (error.response) {
+        console.error(error.response.data.errors);
+      } else {
+        console.error(error.message);
+      }
     }
   };
 
+  // Escapeキーが押下されたらモーダルを閉じる
   useEffect(() => {
     const onKeyDownEsc = (event) => {
       if (show && event.key === "Escape") {
@@ -126,6 +139,7 @@ export const LoginModal = ({ show, close }) => {
             onChange={handleUserChange}
           />
           <Button onClick={handleSignIn}>ログイン</Button>
+          <Toaster position="top-center" />
         </Modal>
       )}
     </>

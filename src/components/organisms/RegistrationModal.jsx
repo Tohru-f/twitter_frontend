@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { XLogo } from "../atoms/XLogo";
 import { FloatingInput } from "../molecules/FloatingInput";
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 const Modal = styled.div`
   position: fixed;
@@ -52,6 +53,7 @@ const Title = styled.span`
 `;
 
 export const RegistrationModal = ({ show, close }) => {
+  // userの初期データを生成
   let defaultUser = {
     phone_number: "",
     email: "",
@@ -62,6 +64,7 @@ export const RegistrationModal = ({ show, close }) => {
 
   const [user, setUser] = useState(defaultUser);
 
+  // ユーザーからの入力を処理対応、nameにはカラム(emailなど)、valueには入力値が入る。
   const handleUserChange = (e) => {
     const { name, value } = e.target;
 
@@ -73,6 +76,19 @@ export const RegistrationModal = ({ show, close }) => {
 
   const handleSignUp = async () => {
     try {
+      // 入力項目が一つでも空であれば送信処理を止めてトーストで入力を促す
+      if (
+        user.phone_number === "" ||
+        user.email === "" ||
+        user.birthday === "" ||
+        user.password === "" ||
+        user.password_confirmation === ""
+      ) {
+        toast.error("全ての項目を入力してください。");
+        return;
+      }
+      // ユーザー作成に必要なデータをAPI側に送信する
+      // confirm_success_urlはユーザーを作成して確認メールのアカウント確認ボタンを押した後に遷移するURL
       const response = await axios.post("/users", {
         phone_number: user.phone_number,
         email: user.email,
@@ -82,12 +98,21 @@ export const RegistrationModal = ({ show, close }) => {
         confirm_success_url: "http://localhost:5173",
       });
       console.log(response.data);
-      setUser(defaultUser);
+      if (response.status === 200) {
+        console.log("Signed up successfully!");
+        setUser(defaultUser);
+        close();
+      }
     } catch (error) {
-      console.error(error.response.data.errors);
+      if (error.response) {
+        console.error(error.response.data.errors);
+      } else {
+        console.error(error.message);
+      }
     }
   };
 
+  // Escapeキーを押下した時にモーダルを閉じる
   useEffect(() => {
     const onKeyDownEsc = (event) => {
       if (show && event.key === "Escape") {
@@ -112,6 +137,7 @@ export const RegistrationModal = ({ show, close }) => {
             name="phone_number"
             value={user.phone_number}
             onChange={handleUserChange}
+            maxLength="5"
           />
           <FloatingInput
             type="text"
@@ -142,6 +168,7 @@ export const RegistrationModal = ({ show, close }) => {
             onChange={handleUserChange}
           />
           <Button onClick={handleSignUp}>登録</Button>
+          <Toaster position="top-center" />
         </Modal>
       )}
     </>

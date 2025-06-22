@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Bookmark_icon from "../../assets/bookmark.png";
+import BookmarkIconImage from "../../assets/bookmark.png";
 
 const Button = styled.button`
   background-color: black;
@@ -29,7 +29,7 @@ const Span = styled.span`
 export const BookmarkIcon = () => {
   return (
     <Button>
-      <img src={Bookmark_icon} alt="home" width="30px" height="30px" />
+      <img src={BookmarkIconImage} alt="home" width="30px" height="30px" />
       <Span>ブックマーク</Span>
     </Button>
   );

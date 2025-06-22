@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Message_icon from "../../assets/message.png";
+import MessageIconImage from "../../assets/message.png";
 
 const Button = styled.button`
   background-color: black;
@@ -29,7 +29,7 @@ const Span = styled.span`
 export const MessageIcon = () => {
   return (
     <Button>
-      <img src={Message_icon} alt="message" width="30px" height="30px" />
+      <img src={MessageIconImage} alt="message" width="30px" height="30px" />
       <Span>メッセージ</Span>
     </Button>
   );
