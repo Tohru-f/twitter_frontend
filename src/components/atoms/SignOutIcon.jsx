@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { HandleError } from "../../utils/HandleError";
 
 const Button = styled.button`
   background-color: black;
@@ -47,11 +49,7 @@ export const SignOutIcon = () => {
         navigate("/");
       }
     } catch (error) {
-      if (error.response) {
-        console.error(error.response.data.errors);
-      } else {
-        console.error(error.message);
-      }
+      HandleError(error);
     }
   };
 

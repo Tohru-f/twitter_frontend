@@ -4,8 +4,8 @@ import { PostIcon } from "../atoms/PostIcon";
 import Animated_ryoma from "../../assets/Animated_ryoma.jpeg";
 import { SeparateLine } from "../atoms/SeparateLine";
 import ImageMode from "../../assets/image_mode.png";
-import axios from "axios";
-import toast, { Toaster } from "react-hot-toast";
+import { handleTweet } from "../../utils/HandleTweet";
+import { HandlePreview } from "../../utils/HandlePreview";
 
 const Modal = styled.div`
   position: fixed;
@@ -113,74 +113,16 @@ export const PostModal = ({ show, close }) => {
     setAttachedImageHeight(e.target.height);
   };
 
-  // トークン情報をローカルストレージから取得しておく
-  const access_token = localStorage.getItem("access-token");
-  const client = localStorage.getItem("client");
-  const uid = localStorage.getItem("uid");
-
   // 投稿ボタンが押された時の処理。画像処理後に投稿処理となる。
-  const handlePostClick = async (e) => {
-    try {
-      // 投稿欄が空でなければ画像のidと投稿文をAPI側へ送信する。空の場合はユーザーに知らせて終了
-      if (tweetContent !== "") {
-        // 画像ファイルを送る場合、FormDataに格納する必要がある
-        const formData = new FormData();
-        if (!!tweetImage) {
-          tweetImage.forEach((file) => {
-            // 明示的にfiles[]とすることで、API側のparams[;files]を配列データとする
-            formData.append("files[]", file);
-          });
-        }
-        console.log(...formData.entries());
-        console.log(tweetImage);
-        // 複数の画像に対応するためにimageIdを配列で管理する。参照できるようにtry内で最上階で宣言
-        const imageId = [];
-        // 画像ファイルをAPi側のcontrollerに送信
-        if (tweetImage.length > 0) {
-          const imageResponse = await axios.post("/images", formData, {
-            headers: {
-              "access-token": access_token,
-              client: client,
-              uid: uid,
-            },
-          });
-          console.log(imageResponse.data);
-          // API側から受け取った画像ファイルのblobsのハッシュデータからidを取得して画像idとして追加する
-          for (let res of imageResponse.data.blobs) {
-            imageId.push(res.id);
-          }
-        }
-        const response = await axios.post(
-          "/tweets",
-          { tweet: { content: tweetContent, image_ids: imageId } },
-          {
-            headers: {
-              "access-token": access_token,
-              client: client,
-              uid: uid,
-            },
-          }
-        );
-        console.log(response.data);
-        // 投稿が成功したら投稿欄、state変数の画像とプレビュー画像を初期化、モーダルを閉じる
-        if (response.status === 200) {
-          console.log("Tweeted successfully!");
-          setTweetContent("");
-          setTweetImage([]);
-          setImagePreview([]);
-          close();
-        }
-      } else {
-        toast.error("空での投稿はできません。");
-        return;
-      }
-    } catch (error) {
-      if (error.response) {
-        console.error(error.response.data.errors);
-      } else {
-        console.error(error.message);
-      }
-    }
+  const handlePostClick = async () => {
+    handleTweet({
+      tweetContent,
+      tweetImage,
+      setTweetContent,
+      setTweetImage,
+      setImagePreview,
+      close,
+    });
   };
 
   // 投稿欄の入力文字を保管
@@ -190,45 +132,16 @@ export const PostModal = ({ show, close }) => {
 
   // inputで選択された画像ファイルをプレビュー画像として表示する
   const handleChangePostImage = (e) => {
-    // 何も選択されなかったら処理中断
-    // ?を付けることでe.target.filesがnull/undefinedの場合はundefinedを返し、エラーを回避する
-    if (e.target.files?.length === 0) {
-      return;
-    }
-
-    // ファイルが画像でなかったら処理中断
-    // ?を付けることでe.target.filesがnull/undefinedの場合はundefinedを返し、エラーを回避する
-    if (!e.target.files?.[0].type.match("image.*")) {
-      return;
-    }
-
     // 選択された画像ファイルが入る。？でe.targetが存在しない場合にエラーを防ぐ
     const uploadedFiles = e.target?.files;
-
-    // 画像ファイルはFileListオブジェクト(配列のようなもの)なので配列データに変換する
-    const filesArray = Array.from(uploadedFiles);
-    const readers = filesArray.map((file) => {
-      return new Promise((resolve) => {
-        // FileReader1つに対して1つのファイルしか入れられない
-        const reader = new FileReader(); // ファイル内容をメモリに読み込むAPI
-        reader.onload = (e) => resolve(e.target.result); // 読み込み完了時に発火し、結果をe.target.resultで取得
-        reader.readAsDataURL(file); // ファイルをData URL形式で非同期読み込み。画像表示にはData URL形式が必要
-      });
+    HandlePreview({
+      uploadedFiles,
+      tweetImage,
+      imagePreview,
+      setImagePreview,
+      setTweetImage,
+      e,
     });
-
-    // readersに格納されたPromiseオブジェクトの配列を全て読み込む(時間が掛かるので非同期)
-    // Data URL配列をimagePreview変数に保管する
-    Promise.all(readers).then((results) => {
-      setImagePreview(results);
-    });
-    console.log(imagePreview);
-
-    // FileListオブジェクト(配列のようなもの)をArray.fromで配列に変換する
-    const files = Array.from(e.target.files);
-    if (files.length > 0) {
-      // スプレッド構文でフラットな配列を生成する
-      setTweetImage([...tweetImage, ...files]);
-    }
   };
 
   const handleImageClick = (index) => {
@@ -250,6 +163,7 @@ export const PostModal = ({ show, close }) => {
     return () => window.removeEventListener("keydown", onKeyDownEsc);
   }, [show, close]);
 
+  if (!show) return <></>;
   return (
     <>
       {show && <Overlay onClick={close}></Overlay>}

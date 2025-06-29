@@ -24,7 +24,9 @@ export function GoogleIcon() {
 
   const handleGoogleLogin = () => {
     // googleの認証画面へ遷移して認証を行う
-    window.location.href = "http://localhost:3000/api/v1/users/google_oauth2";
+    window.location.href = `${
+      import.meta.env.VITE_API_URL
+    }/api/v1/users/google_oauth2`;
   };
 
   // useEffectでsearchParamsが変わった時に処理を始動させる

@@ -4,6 +4,7 @@ import { XLogo } from "../atoms/XLogo";
 import { FloatingInput } from "../molecules/FloatingInput";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+import { HandleError } from "../../utils/HandleError";
 
 const Modal = styled.div`
   position: fixed;
@@ -104,11 +105,7 @@ export const RegistrationModal = ({ show, close }) => {
         close();
       }
     } catch (error) {
-      if (error.response) {
-        console.error(error.response.data.errors);
-      } else {
-        console.error(error.message);
-      }
+      HandleError(error);
     }
   };
 
@@ -124,6 +121,7 @@ export const RegistrationModal = ({ show, close }) => {
     return () => window.removeEventListener("keydown", onKeyDownEsc);
   }, [show, close]);
 
+  if (!show) return <></>;
   return (
     <>
       {show && <Overlay onClick={close}></Overlay>}

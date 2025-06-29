@@ -6,6 +6,7 @@ import axios from "axios";
 import AxiosBaseService from "../../services/AxiosBaseService";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { HandleError } from "../../utils/HandleError";
 
 const Modal = styled.div`
   position: fixed;
@@ -88,6 +89,7 @@ export const LoginModal = ({ show, close }) => {
       });
       console.log(response.data);
       console.log(response.headers);
+      console.log(new Date(response.headers.expiry * 1000));
       if (response.status === 200) {
         console.log("Signed in successfully!");
         setUser(defaultUser);
@@ -97,11 +99,7 @@ export const LoginModal = ({ show, close }) => {
         navigate("/main");
       }
     } catch (error) {
-      if (error.response) {
-        console.error(error.response.data.errors);
-      } else {
-        console.error(error.message);
-      }
+      HandleError(error);
     }
   };
 
@@ -117,6 +115,7 @@ export const LoginModal = ({ show, close }) => {
     return () => window.removeEventListener("keydown", onKeyDownEsc);
   }, [show, close]);
 
+  if (!show) return <></>;
   return (
     <>
       {show && <Overlay onClick={close}></Overlay>}
