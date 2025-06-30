@@ -166,67 +166,65 @@ export const PostModal = ({ show, close }) => {
   if (!show) return <></>;
   return (
     <>
-      {show && <Overlay onClick={close}></Overlay>}
-      {show && (
-        <Modal $attachedimageheight={attachedImageHeight}>
-          <TweetModalBox>
-            <Image
-              src={Animated_ryoma}
-              alt="animated_ryoma"
-              width="40px"
-              height="40px;"
+      <Overlay onClick={close}></Overlay>
+      <Modal $attachedimageheight={attachedImageHeight}>
+        <TweetModalBox>
+          <Image
+            src={Animated_ryoma}
+            alt="animated_ryoma"
+            width="40px"
+            height="40px;"
+          />
+          <InputPlace
+            type="text"
+            placeholder="いまどうしてる？"
+            value={tweetContent}
+            onChange={handleTweetChange}
+          />
+        </TweetModalBox>
+        <PreviewBox>
+          {!!imagePreview &&
+            // imagePreviewにプレビュー画像用のデータURLが格納される
+            // map関数で=> () アロー関数を使うことで要素をreturnしていることで表示できる
+            imagePreview.map((preview, idx) => (
+              <output key={idx}>
+                <img
+                  src={preview}
+                  alt="画像プレビュー"
+                  width="30%"
+                  height="30%"
+                  onLoad={onImageLoad}
+                  onClick={() => handleImageClick(idx)}
+                />
+              </output>
+            ))}
+        </PreviewBox>
+        <SeparateLine />
+        <PostBox>
+          <ImageUploadSet>
+            <ImageButton
+              onClick={() =>
+                // inputタグを参照しており、このボタンをクリックするとinputタグをクリックしたことになる。!!は値を真偽値に変換
+                !!fileInputRef.current && fileInputRef.current.click()
+              }
             />
-            <InputPlace
-              type="text"
-              placeholder="いまどうしてる？"
-              value={tweetContent}
-              onChange={handleTweetChange}
+            <input
+              type="file" // これによりファイル選択のウィンドウが表示される
+              accept="image/*"
+              hidden
+              multiple
+              ref={fileInputRef} // ImageButtonコンポーネントから参照されている。
+              onChange={handleChangePostImage}
             />
-          </TweetModalBox>
-          <PreviewBox>
-            {!!imagePreview &&
-              // imagePreviewにプレビュー画像用のデータURLが格納される
-              // map関数で=> () アロー関数を使うことで要素をreturnしていることで表示できる
-              imagePreview.map((preview, idx) => (
-                <output key={idx}>
-                  <img
-                    src={preview}
-                    alt="画像プレビュー"
-                    width="30%"
-                    height="30%"
-                    onLoad={onImageLoad}
-                    onClick={() => handleImageClick(idx)}
-                  />
-                </output>
-              ))}
-          </PreviewBox>
-          <SeparateLine />
-          <PostBox>
-            <ImageUploadSet>
-              <ImageButton
-                onClick={() =>
-                  // inputタグを参照しており、このボタンをクリックするとinputタグをクリックしたことになる。!!は値を真偽値に変換
-                  !!fileInputRef.current && fileInputRef.current.click()
-                }
-              />
-              <input
-                type="file" // これによりファイル選択のウィンドウが表示される
-                accept="image/*"
-                hidden
-                multiple
-                ref={fileInputRef} // ImageButtonコンポーネントから参照されている。
-                onChange={handleChangePostImage}
-              />
-              <DummyImage src={ImageMode} />
-            </ImageUploadSet>
-            <PostIcon
-              width="120px"
-              margin-bottom="0px"
-              handlePostClick={handlePostClick}
-            />
-          </PostBox>
-        </Modal>
-      )}
+            <DummyImage src={ImageMode} />
+          </ImageUploadSet>
+          <PostIcon
+            width="120px"
+            margin-bottom="0px"
+            handlePostClick={handlePostClick}
+          />
+        </PostBox>
+      </Modal>
     </>
   );
 };
