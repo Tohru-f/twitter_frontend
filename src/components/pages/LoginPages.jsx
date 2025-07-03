@@ -14,9 +14,9 @@ const Pages = styled.div`
 `;
 
 export const LoginPages = () => {
-  const [showRegModal, setShowRegModal] = useState(false);
-  const openRegModalHandler = () => setShowRegModal(true);
-  const closeRegModalHandler = () => setShowRegModal(false);
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
+  const openSignUpModalHandler = () => setShowSignUpModal(true);
+  const closeSignUpModalHandler = () => setShowSignUpModal(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const openLoginModalHandler = () => setShowLoginModal(true);
   const closeModalHandler = () => setShowLoginModal(false);
@@ -25,10 +25,13 @@ export const LoginPages = () => {
     <Pages>
       <XLogo width="340px" height="310px" box_height="444px" />
       <LoginComponents
-        openReg={openRegModalHandler}
+        openSignUp={openSignUpModalHandler}
         openLogin={openLoginModalHandler}
       />
-      <RegistrationModal show={showRegModal} close={closeRegModalHandler} />
+      <RegistrationModal
+        show={showSignUpModal}
+        close={closeSignUpModalHandler}
+      />
       <LoginModal show={showLoginModal} close={closeModalHandler} />
     </Pages>
   );

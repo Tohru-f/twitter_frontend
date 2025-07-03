@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Home_icon from "../../assets/home.png";
+import HomeIconImage from "../../assets/home.png";
 
 const Button = styled.button`
   background-color: black;
@@ -29,7 +29,7 @@ const Span = styled.span`
 export const HomeIcon = () => {
   return (
     <Button>
-      <img src={Home_icon} alt="home" width="30px" height="30px" />
+      <img src={HomeIconImage} alt="home" width="30px" height="30px" />
       <Span>ホーム</Span>
     </Button>
   );

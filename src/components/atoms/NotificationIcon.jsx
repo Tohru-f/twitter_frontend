@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Notification_icon from "../../assets/notification.png";
+import NotificationIconImage from "../../assets/notification.png";
 
 const Button = styled.button`
   background-color: black;
@@ -30,7 +30,7 @@ export const NotificationIcon = () => {
   return (
     <Button>
       <img
-        src={Notification_icon}
+        src={NotificationIconImage}
         alt="notification"
         width="30px"
         height="30px"

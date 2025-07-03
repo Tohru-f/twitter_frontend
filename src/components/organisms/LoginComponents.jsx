@@ -33,7 +33,7 @@ const Specialized_h3 = styled.h3`
   color: white;
 `;
 
-export const LoginComponents = ({ openReg, openLogin }) => {
+export const LoginComponents = ({ openSignUp, openLogin }) => {
   return (
     <Components>
       <Specialized_h1>すべての話題が、ここに。</Specialized_h1>
@@ -41,7 +41,7 @@ export const LoginComponents = ({ openReg, openLogin }) => {
       <GoogleIcon />
       <AppleIcon />
       <Or />
-      <AccountMaking open={openReg} />
+      <AccountMaking open={openSignUp} />
       <ExplanationAgreement />
       <br />
       <Specialized_h3>アカウントをお持ちの場合</Specialized_h3>

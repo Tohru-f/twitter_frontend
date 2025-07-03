@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 const Button = styled.button`
@@ -21,9 +21,9 @@ const Span = styled.span`
   padding-left: 20px;
 `;
 
-export const PostIcon = (props) => {
+export const RaisePostModalIcon = (props) => {
   return (
-    <Button style={{ width: props.width }} onClick={props.handlePostClick}>
+    <Button style={{ width: props.width }} onClick={props.openPostModalHandler}>
       ポストする
     </Button>
   );
