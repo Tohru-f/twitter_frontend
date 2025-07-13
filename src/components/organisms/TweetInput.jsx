@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import Animated_ryoma from "../../assets/Animated_ryoma.jpeg";
 import styled from "styled-components";
 import ImageMode from "../../assets/image_mode.png";
 import { PostIcon } from "../atoms/PostIcon";
 import toast, { Toaster } from "react-hot-toast";
 import { handleTweet } from "../../utils/HandleTweet";
 import { HandlePreview } from "../../utils/HandlePreview";
+import { ImageIcon } from "../atoms/ImageIcon";
 
 const TweetSpace = styled.div`
   border-top: solid 1px #3b3b3b;
@@ -137,12 +137,7 @@ export const TweetInput = () => {
     // attachedImageHeightはプレビュー画像の高さ
     <TweetSpace $attachedimageheight={attachedImageHeight}>
       <PairBox>
-        <Image
-          src={Animated_ryoma}
-          alt="animated_ryoma"
-          width="40px"
-          height="40px;"
-        />
+        <ImageIcon />
         <InputPlace
           type="text"
           placeholder="いまどうしてる？"
