@@ -19,6 +19,7 @@ export const TweetView = ({ showPostModal, closePostModalHandler }) => {
   const [tweets, setTweets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalTweets, setTotalTweets] = useState(0);
+  const query = new URLSearchParams({ limit: 10, offset: 0 });
 
   // 引数のtabにrecommendation、もしくはfollowを入れることでstate関数によりタブを切り替える
   const handleTabClick = (tab) => {
@@ -30,7 +31,7 @@ export const TweetView = ({ showPostModal, closePostModalHandler }) => {
     let ignore = false;
     const describeTweet = async () => {
       try {
-        const response = await axiosInstance.get("/tweets?limit=10&offset=0");
+        const response = await axiosInstance.get(`/tweets?${query.toString()}`);
         if (!ignore) {
           console.log(response.data);
           setTweets(response.data.data.tweets);

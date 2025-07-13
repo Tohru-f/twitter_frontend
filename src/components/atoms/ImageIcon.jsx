@@ -8,13 +8,6 @@ const Image = styled.img`
 
 export const ImageIcon = () => {
   return (
-    <>
-      <Image
-        src={Animated_ryoma}
-        alt="animated_ryoma"
-        width="40px"
-        height="40px;"
-      />
-    </>
+    <Image src={Animated_ryoma} alt="animated_ryoma" width={40} height={40} />
   );
 };
