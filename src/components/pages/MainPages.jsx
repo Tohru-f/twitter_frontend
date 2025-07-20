@@ -9,6 +9,7 @@ const MainSpace = styled.div`
   display: flex;
   width: 100%;
   height: 100vh;
+  overflow: hidden;
 `;
 
 export const MainPages = () => {

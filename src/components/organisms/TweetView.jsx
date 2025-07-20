@@ -11,6 +11,13 @@ import { HandleError } from "../../utils/HandleError";
 const TweetBox = styled.div`
   width: 35%;
   color: white;
+  z-index: 20;
+  overflow: auto; // スクロールを許可
+  scrollbar-width: none; /*Google Chrome、Firefoxへのスクロール非表示対応*/
+  -ms-overflow-style: none; /*IE(Internet Explorer)・Microsoft Edgeへのスクロール非表示対応*/
+  -webkit-scrollbar{  /*Safariへのスクロール非表示対応*/
+  display: none;}
+}
 `;
 
 export const TweetView = ({ showPostModal, closePostModalHandler }) => {

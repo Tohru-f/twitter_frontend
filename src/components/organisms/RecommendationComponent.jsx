@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { ImageIcon } from "../atoms/ImageIcon";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -8,10 +8,16 @@ import { HandleError } from "../../utils/HandleError";
 import toast from "react-hot-toast";
 import { HandleOffset } from "../../utils/HandleOffset";
 import { HandlePagination } from "../../utils/HandlePagination";
+import { axiosInstance } from "../../utils/HandleAxios";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 // 投稿日の表示を現在の日付から「何日前」で表示する
 locale("ja");
 extend(relativeTime);
+
+const LinkedBox = styled.div`
+  width: 100%;
+`;
 
 const TweetBox = styled.div`
   width: 100%;
@@ -41,10 +47,16 @@ const ContentBox = styled.div`
   width: 100%;
   margin: 0px 10px 10px 10px;
   word-break: break-all;
+  color: white;
 `;
 
 const ContentTag = styled.p`
   margin-top: 0px;
+`;
+
+const TweetedImage = styled.img`
+  margin-bottom: 0px;
+  object-fit: cover;
 `;
 
 const PaginationBox = styled.div`
@@ -81,11 +93,24 @@ export const RecommendationComponent = ({
   totalTweets,
 }) => {
   const [currentOffset, setCurrentOffset] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [tweetDetail, setTweetDetail] = useState([]);
+  const navigate = useNavigate();
+  const location = useLocation();
   // newOffset, newPage, maxPagesはstate変数のままで管理するとレンダリングできないので、ローカル変数を使用
   let newOffset = currentOffset;
-  let newPage = currentPage;
   let maxPages = Math.ceil(totalTweets / 10);
+  const width = 100;
+
+  const query = new URLSearchParams(location.search);
+  // queryで取得したデータは文字列なので数字に変換する
+  const page = parseInt(query.get("page"), 10) || 1;
+  const [currentPage, setCurrentPage] = useState(null);
+  let newPage = page;
+
+  useEffect(() => {
+    setCurrentPage(page);
+    describeDesignatedTweet(page);
+  }, [page]);
 
   // 現在のページから一つ前のページへ遷移する
   const describePrevTweet = async () => {
@@ -101,6 +126,7 @@ export const RecommendationComponent = ({
           setTweets,
         });
         setCurrentPage(newPage);
+        navigate(`/main?page=${newPage}`);
       } else {
         toast("最初のページです。");
         return;
@@ -124,6 +150,7 @@ export const RecommendationComponent = ({
           setTweets,
         });
         setCurrentPage(newPage);
+        navigate(`/main?page=${newPage}`);
       } else {
         toast("最後のページです。");
         return;
@@ -148,6 +175,11 @@ export const RecommendationComponent = ({
         setTweets,
       });
       setCurrentPage(newPage);
+      const currentQuery = new URLSearchParams(location.search);
+      const currentPageFromUrl = parseInt(currentQuery.get("page"), 10);
+      if (currentPageFromUrl !== newPage) {
+        navigate(`/main?page=${newPage}`);
+      }
     } catch (error) {
       HandleError(error);
     }
@@ -225,28 +257,51 @@ export const RecommendationComponent = ({
     return pageNumbers;
   };
 
+  const showTweetDetail = async (id) => {
+    const response = await axiosInstance.get(`/tweets/${id}`);
+    setTweetDetail(response.data.data.tweet);
+    console.log(response.data);
+    console.log(currentPage);
+  };
+
   return (
     <>
       {isLoading && <h2>Now Loading...</h2>}
       {!!tweets &&
         tweets.map((tweet) => (
-          <TweetBox key={tweet.id}>
-            <IconBox>
-              <ImageIcon />
-            </IconBox>
-            <ContentBox>
-              <NameAndTimeBox>
-                {/* <p>{tweet.user.name}</p> */}
-                <NameTag>名無しの権兵衛</NameTag>{" "}
-                <TimeTag>{dayjs(tweet.created_at).fromNow()}</TimeTag>
-                {/* プロフィール実装までの仮 */}
-              </NameAndTimeBox>
-              <ContentTag>{tweet.content}</ContentTag>
-              {tweet.image_urls.length > 0 && (
-                <img src={tweet.image_urls} width="400px" height="400px" />
-              )}
-            </ContentBox>
-          </TweetBox>
+          <LinkedBox key={tweet.id}>
+            <Link
+              to={`/tweets/${tweet.id}`}
+              onClick={() => showTweetDetail(tweet.id)}
+              style={{ textDecoration: "none" }}
+              state={{
+                tweet: tweet,
+                page: currentPage,
+              }} /* 詳細ページへ値を渡す */
+            >
+              <TweetBox>
+                <IconBox>
+                  <ImageIcon />
+                </IconBox>
+                <ContentBox>
+                  <NameAndTimeBox>
+                    {/* <p>{tweet.user.name}</p> */}
+                    <NameTag>名無しの権兵衛</NameTag>{" "}
+                    <TimeTag>{dayjs(tweet.created_at).fromNow()}</TimeTag>
+                    {/* プロフィール実装までの仮 */}
+                  </NameAndTimeBox>
+                  <ContentTag>{tweet.content}</ContentTag>
+                  {tweet.image_urls.length > 0 && (
+                    <TweetedImage
+                      src={tweet.image_urls}
+                      width={width + "%"}
+                      height="auto"
+                    />
+                  )}
+                </ContentBox>
+              </TweetBox>
+            </Link>
+          </LinkedBox>
         ))}
       <PaginationBox>
         {/* 無限レンダリングが発生するので、onClick部分はアロー関数で定義 */}

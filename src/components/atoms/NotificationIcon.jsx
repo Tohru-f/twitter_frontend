@@ -32,8 +32,8 @@ export const NotificationIcon = () => {
       <img
         src={NotificationIconImage}
         alt="notification"
-        width="30px"
-        height="30px"
+        width={30}
+        height={30}
       />
       <Span>通知</Span>
     </Button>
