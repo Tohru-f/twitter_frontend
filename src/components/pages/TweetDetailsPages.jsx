@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import styled from "styled-components";
 import { ImageIcon } from "../atoms/ImageIcon";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -90,13 +90,11 @@ export const TweetDetailsPages = () => {
   const { tweet } = location.state; //一覧ページからLinkで付与された値を受け取る
   const { page } = location.state; //一覧ページからLinkで付与された値を受け取る
   const navigate = useNavigate();
-  // const value = useContext(currentState);
   const width = 95;
   const height = 95;
 
   const handleBack = () => {
     navigate(-1);
-    console.log(page);
   };
 
   return (
