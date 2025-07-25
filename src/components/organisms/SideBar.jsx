@@ -16,6 +16,7 @@ const SideSpace = styled.div`
   align-items: flex-end;
   width: 30%;
   border-right: solid 1px #3b3b3b;
+  z-index: 30;
 `;
 
 const SidePart = styled.div`

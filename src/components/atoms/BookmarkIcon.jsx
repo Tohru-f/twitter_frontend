@@ -29,7 +29,7 @@ const Span = styled.span`
 export const BookmarkIcon = () => {
   return (
     <Button>
-      <img src={BookmarkIconImage} alt="home" width="30px" height="30px" />
+      <img src={BookmarkIconImage} alt="home" width={30} height={30} />
       <Span>ブックマーク</Span>
     </Button>
   );

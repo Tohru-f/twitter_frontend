@@ -27,7 +27,7 @@ const Button = styled.button`
 export const XHomeIcon = () => {
   return (
     <Button>
-      <img src={XHomeIconImage} alt="home" width="24px" height="24px" />
+      <img src={XHomeIconImage} alt="home" width={24} height={24} />
     </Button>
   );
 };

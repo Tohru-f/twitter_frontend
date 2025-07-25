@@ -29,7 +29,7 @@ const Span = styled.span`
 export const ProfileIcon = () => {
   return (
     <Button>
-      <img src={ProfileIconImage} alt="home" width="30px" height="30px" />
+      <img src={ProfileIconImage} alt="home" width={30} height={30} />
       <Span>プロフィール</Span>
     </Button>
   );

@@ -8,6 +8,7 @@ const SearchSide = styled.div`
   flex-direction: column;
   align-items: flex-start;
   border-left: solid 1px #3b3b3b;
+  z-index: 30;
 `;
 
 const SearchPart = styled.div`

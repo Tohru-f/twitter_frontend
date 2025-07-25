@@ -29,7 +29,7 @@ const Span = styled.span`
 export const HomeIcon = () => {
   return (
     <Button>
-      <img src={HomeIconImage} alt="home" width="30px" height="30px" />
+      <img src={HomeIconImage} alt="home" width={30} height={30} />
       <Span>ホーム</Span>
     </Button>
   );

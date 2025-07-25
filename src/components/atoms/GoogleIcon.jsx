@@ -44,13 +44,13 @@ export function GoogleIcon() {
       localStorage.setItem("uid", uid);
 
       // ログイン後のメインページへ遷移
-      navigate("/main");
+      navigate("/main?page=1");
     }
   }, [searchParams]);
 
   return (
     <Button onClick={handleGoogleLogin}>
-      <img src={GoogleIconImage} alt="google_ico" width="24px" height="24px" />
+      <img src={GoogleIconImage} alt="google_ico" width={24} height={24} />
       Google で登録
     </Button>
   );

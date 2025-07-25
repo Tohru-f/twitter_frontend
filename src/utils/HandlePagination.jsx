@@ -12,7 +12,7 @@ const DesignatedButton = styled.button`
 
 export const HandlePagination = ({
   i,
-  describeDesignatedTweet,
+  describeSelectedTweet,
   pageNumbers,
   currentPage,
 }) => {
@@ -23,7 +23,7 @@ export const HandlePagination = ({
       </CurrentPageNumber>
     ) : (
       // 無限レンダリングが発生するので、onClick部分はアロー関数で定義
-      <DesignatedButton key={i} onClick={() => describeDesignatedTweet(i)}>
+      <DesignatedButton key={i} onClick={() => describeSelectedTweet(i)}>
         {i}
       </DesignatedButton>
     )

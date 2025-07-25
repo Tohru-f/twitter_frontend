@@ -96,7 +96,7 @@ export const LoginModal = ({ show, close }) => {
         localStorage.setItem("access-token", response.headers["access-token"]);
         localStorage.setItem("client", response.headers.client);
         localStorage.setItem("uid", response.headers.uid);
-        navigate("/main");
+        navigate("/main?page=1");
       }
     } catch (error) {
       HandleError(error);
