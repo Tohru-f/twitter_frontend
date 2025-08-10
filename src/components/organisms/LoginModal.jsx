@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { XLogo } from "../atoms/XLogo";
 import { FloatingInput } from "../molecules/FloatingInput";
@@ -7,6 +7,7 @@ import AxiosBaseService from "../../services/AxiosBaseService";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { HandleError } from "../../utils/HandleError";
+import { saveUserData } from "../../App";
 
 const Modal = styled.div`
   position: fixed;
@@ -44,6 +45,9 @@ const Button = styled.button`
   font-size: 17px;
   font-weight: bold;
   margin-top: 40px;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const Title = styled.span`
@@ -56,6 +60,7 @@ const Title = styled.span`
 `;
 
 export const LoginModal = ({ show, close }) => {
+  const loginUser = useContext(saveUserData);
   // userの初期データとして生成
   let defaultUser = {
     email: "",
@@ -83,11 +88,11 @@ export const LoginModal = ({ show, close }) => {
         toast.error("Email及びパスワードを両方入力してください。");
         return;
       }
-      const response = await axios.post("/users/sign_in", {
+      const response = await axios.post("/auth/sign_in", {
         email: user.email,
         password: user.password,
       });
-      console.log(response.data);
+      console.log(response.data.data);
       console.log(response.headers);
       console.log(new Date(response.headers.expiry * 1000));
       if (response.status === 200) {
@@ -96,7 +101,14 @@ export const LoginModal = ({ show, close }) => {
         localStorage.setItem("access-token", response.headers["access-token"]);
         localStorage.setItem("client", response.headers.client);
         localStorage.setItem("uid", response.headers.uid);
-        navigate("/main?page=1");
+        localStorage.setItem("login_userid", response.data.data.id);
+        loginUser.name = response.data.data.name;
+        loginUser.profile = response.data.data.profile;
+        loginUser.location = response.data.data.location;
+        loginUser.website = response.data.data.website;
+        loginUser.birthday = response.data.data.birthday;
+        console.log(loginUser);
+        navigate("/main");
       }
     } catch (error) {
       HandleError(error);

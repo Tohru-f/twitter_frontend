@@ -42,6 +42,9 @@ const Button = styled.button`
   font-size: 17px;
   font-weight: bold;
   margin-top: 40px;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const Title = styled.span`
@@ -90,7 +93,7 @@ export const RegistrationModal = ({ show, close }) => {
       }
       // ユーザー作成に必要なデータをAPI側に送信する
       // confirm_success_urlはユーザーを作成して確認メールのアカウント確認ボタンを押した後に遷移するURL
-      const response = await axios.post("/users", {
+      const response = await axios.post("/auth", {
         phone_number: user.phone_number,
         email: user.email,
         birthday: user.birthday,

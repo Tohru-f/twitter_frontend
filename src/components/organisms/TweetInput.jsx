@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import ImageMode from "../../assets/image_mode.png";
 import { PostIcon } from "../atoms/PostIcon";
@@ -6,6 +6,9 @@ import toast, { Toaster } from "react-hot-toast";
 import { handleTweet } from "../../utils/HandleTweet";
 import { HandlePreview } from "../../utils/HandlePreview";
 import { ImageIcon } from "../atoms/ImageIcon";
+import { saveUserData } from "../../App";
+import { axiosInstance } from "../../utils/HandleAxios";
+import { Link } from "react-router-dom";
 
 const TweetSpace = styled.div`
   border-top: solid 1px #3b3b3b;
@@ -22,8 +25,17 @@ const PairBox = styled.div`
   width: 100%;
 `;
 
-const Image = styled.img`
+const ProfileIcon = styled.img`
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
+`;
+
+const ProfileDummyIcon = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid white;
 `;
 
 const InputPlace = styled.input`
@@ -92,6 +104,9 @@ export const TweetInput = () => {
   // 画像選択ボタンから参照させるために使用
   const fileInputRef = useRef(null);
 
+  // App.jsxで管理しているstateをContextで受け継ぐ
+  const { userInfo, setUserInfo } = useContext(saveUserData);
+
   // 画像が選択された時点でフォームの高さを調整したいので、画像の高さを取得してCSSに反映
   const onImageLoad = (e) => {
     setAttachedImageHeight(e.target.height);
@@ -133,11 +148,27 @@ export const TweetInput = () => {
     setImagePreview((prev) => prev.filter((_, idx) => idx !== index));
   };
 
+  // 初期レンダリングの時にログインユーザーのデータを取得してuserInfoを書き換えてレンダリングする
+  useEffect(() => {
+    const getLoginUserInfo = async () => {
+      const response = await axiosInstance.get("/users");
+      console.log(response.data);
+      setUserInfo(response.data.data.user);
+    };
+    getLoginUserInfo();
+  }, []);
+
   return (
     // attachedImageHeightはプレビュー画像の高さ
     <TweetSpace $attachedimageheight={attachedImageHeight}>
       <PairBox>
-        <ImageIcon />
+        <Link to={`/users/${userInfo.id}`}>
+          {userInfo.icon_urls ? (
+            <ProfileIcon src={userInfo.icon_urls} />
+          ) : (
+            <ProfileDummyIcon />
+          )}
+        </Link>
         <InputPlace
           type="text"
           placeholder="いまどうしてる？"

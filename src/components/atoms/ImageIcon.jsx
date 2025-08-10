@@ -6,8 +6,14 @@ const Image = styled.img`
   border-radius: 50%;
 `;
 
-export const ImageIcon = () => {
+export const ImageIcon = ({ width, height, style }) => {
   return (
-    <Image src={Animated_ryoma} alt="animated_ryoma" width={40} height={40} />
+    <Image
+      src={Animated_ryoma}
+      alt="animated_ryoma"
+      width={width}
+      height={height}
+      style={style}
+    />
   );
 };

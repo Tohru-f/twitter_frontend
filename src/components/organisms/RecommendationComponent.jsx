@@ -19,32 +19,49 @@ const LinkedBox = styled.div`
 `;
 
 const TweetBox = styled.div`
-  width: 100%;
+  width: 85%;
   display: flex;
+  flex-flow: column;
   margin-top: 10px;
 `;
 
-const IconBox = styled.div`
-  margin-left: 10px;
-`;
-
-const NameAndTimeBox = styled.div`
+const IconAndNameAndTimeBox = styled.div`
   display: flex;
   margin-bottom: 0px;
 `;
 
+const IconBox = styled.div`
+  margin-left: 10px;
+  display: flex;
+`;
+
+const ProfileIcon = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+`;
+
+const ProfileIconDummy = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid white;
+`;
+
 const NameTag = styled.p`
-  margin: 0px;
+  margin: 0px 0px 0px 5px;
   font-weight: bold;
+  color: white;
 `;
 
 const TimeTag = styled.p`
   margin: 0px 0px 0px 10px;
+  color: white;
 `;
 
 const ContentBox = styled.div`
   width: 100%;
-  margin: 0px 10px 10px 10px;
+  margin: 0px 10px 10px 55px;
   word-break: break-all;
   color: white;
 `;
@@ -255,24 +272,42 @@ export const RecommendationComponent = () => {
       {!!tweets &&
         tweets.map((tweet) => (
           <LinkedBox key={tweet.id}>
-            <Link
-              to={`/tweets/${tweet.id}`}
-              style={{ textDecoration: "none" }}
-              state={{
-                tweet: tweet,
-              }} /* 詳細ページへ値を渡す */
-            >
-              <TweetBox>
-                <IconBox>
-                  <ImageIcon />
-                </IconBox>
+            <TweetBox>
+              <IconAndNameAndTimeBox>
+                <Link
+                  to={`/users/${tweet.user.id}`}
+                  style={{ textDecoration: "none" }}
+                  state={{
+                    tweet: tweet,
+                  }} /* プロフィールページへ値を渡す */
+                >
+                  <IconBox>
+                    {tweet.user.icon_urls ? (
+                      <ProfileIcon src={tweet.user.icon_urls} />
+                    ) : (
+                      <ProfileIconDummy />
+                    )}
+                    <NameTag>{tweet.user.name}</NameTag>{" "}
+                  </IconBox>
+                </Link>
+                <Link
+                  to={`/tweets/${tweet.id}`}
+                  style={{ textDecoration: "none" }}
+                  state={{
+                    tweet: tweet,
+                  }} /* 詳細ページへ値を渡す */
+                >
+                  <TimeTag>{dayjs(tweet.created_at).fromNow()}</TimeTag>
+                </Link>
+              </IconAndNameAndTimeBox>
+              <Link
+                to={`/tweets/${tweet.id}`}
+                style={{ textDecoration: "none" }}
+                state={{
+                  tweet: tweet,
+                }} /* 詳細ページへ値を渡す */
+              >
                 <ContentBox>
-                  <NameAndTimeBox>
-                    {/* <p>{tweet.user.name}</p> */}
-                    <NameTag>名無しの権兵衛</NameTag>{" "}
-                    <TimeTag>{dayjs(tweet.created_at).fromNow()}</TimeTag>
-                    {/* プロフィール実装までの仮 */}
-                  </NameAndTimeBox>
                   <ContentTag>{tweet.content}</ContentTag>
                   {tweet.image_urls.length > 0 && (
                     <TweetedImage
@@ -282,8 +317,8 @@ export const RecommendationComponent = () => {
                     />
                   )}
                 </ContentBox>
-              </TweetBox>
-            </Link>
+              </Link>
+            </TweetBox>
           </LinkedBox>
         ))}
       <PaginationBox>

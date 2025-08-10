@@ -35,7 +35,7 @@ export const SignOutIcon = () => {
 
   const handleSignOut = async () => {
     try {
-      const response = await axios.delete("/users/sign_out", {
+      const response = await axios.delete("/auth/sign_out", {
         headers: {
           "access-token": access_token,
           client: client,

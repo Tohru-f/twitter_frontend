@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { ImageIcon } from "../atoms/ImageIcon";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SideBar } from "../organisms/SideBar";
 import { SearchBar } from "../organisms/SearchBar";
 import ArrowLeftImage from "../../assets/arrow.png";
@@ -31,6 +31,19 @@ const NameAndIconBox = styled.div`
   margin-left: 10px;
   display: flex;
   width: 100%;
+`;
+
+const ProfileIcon = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+`;
+
+const ProfileDummyIcon = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid white;
 `;
 
 const NameTag = styled.p`
@@ -88,11 +101,13 @@ const ContentTag = styled.p`
 export const TweetDetailsPages = () => {
   const location = useLocation();
   const { tweet } = location.state; //一覧ページからLinkで付与された値を受け取る
-  const { page } = location.state; //一覧ページからLinkで付与された値を受け取る
+
   const navigate = useNavigate();
+
   const width = 95;
   const height = 95;
 
+  // 一つ前のページに戻る
   const handleBack = () => {
     navigate(-1);
   };
@@ -107,11 +122,20 @@ export const TweetDetailsPages = () => {
           </ArrowButton>
           <PostLetter>ポスト</PostLetter>
         </ArrowAndPost>
-        <NameAndIconBox>
-          <ImageIcon />
-          {/* <p>{tweet.user.name}</p> */}
-          <NameTag>名無しの権兵衛</NameTag> {/* プロフィール実装までの仮 */}
-        </NameAndIconBox>
+        <Link
+          to={`/users/${tweet.user.id}`}
+          style={{ textDecoration: "none" }}
+          state={{ tweet: tweet }}
+        >
+          <NameAndIconBox>
+            {tweet.user.icon_urls ? (
+              <ProfileIcon src={tweet.user.icon_urls} />
+            ) : (
+              <ProfileDummyIcon />
+            )}
+            <NameTag>{tweet.user.name}</NameTag>
+          </NameAndIconBox>
+        </Link>
         <ContentBox>
           <ContentTag>{tweet.content}</ContentTag>
           {tweet.image_urls.length > 0 && (
