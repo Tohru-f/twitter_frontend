@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { ImageIcon } from "../atoms/ImageIcon";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs, { locale, extend } from "dayjs";
 import "dayjs/locale/ja";
@@ -9,6 +8,7 @@ import toast from "react-hot-toast";
 import { HandleOffset } from "../../utils/HandleOffset";
 import { HandlePagination } from "../../utils/HandlePagination";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { saveUserDataContext } from "../providers/UserDataProvider";
 
 // 投稿日の表示を現在の日付から「何日前」で表示する
 locale("ja");
@@ -108,6 +108,9 @@ export const RecommendationComponent = () => {
   const [tweets, setTweets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalTweets, setTotalTweets] = useState(0);
+
+  // App.jsxで管理しているstateをContextで受け継ぐ
+  const { userInfo, setUserInfo } = useContext(saveUserDataContext);
 
   // newOffset, newPage, maxPagesはstate変数のままで管理するとレンダリングできないので、ローカル変数を使用
   let maxPages = Math.ceil(totalTweets / 10);
@@ -274,22 +277,36 @@ export const RecommendationComponent = () => {
           <LinkedBox key={tweet.id}>
             <TweetBox>
               <IconAndNameAndTimeBox>
-                <Link
-                  to={`/users/${tweet.user.id}`}
-                  style={{ textDecoration: "none" }}
-                  state={{
-                    tweet: tweet,
-                  }} /* プロフィールページへ値を渡す */
-                >
-                  <IconBox>
-                    {tweet.user.icon_urls ? (
-                      <ProfileIcon src={tweet.user.icon_urls} />
-                    ) : (
-                      <ProfileIconDummy />
-                    )}
-                    <NameTag>{tweet.user.name}</NameTag>{" "}
-                  </IconBox>
-                </Link>
+                {/* プロフィール画面を分岐させる */}
+                {userInfo.id === tweet.user.id ? (
+                  <Link to={"/profile"} style={{ textDecoration: "none" }}>
+                    <IconBox>
+                      {tweet.user.icon_urls ? (
+                        <ProfileIcon src={tweet.user.icon_urls} />
+                      ) : (
+                        <ProfileIconDummy />
+                      )}
+                      <NameTag>{tweet.user.name}</NameTag>{" "}
+                    </IconBox>
+                  </Link>
+                ) : (
+                  <Link
+                    to={`/users/${tweet.user.id}`}
+                    style={{ textDecoration: "none" }}
+                    state={{
+                      tweet: tweet,
+                    }} /* プロフィールページへ値を渡す */
+                  >
+                    <IconBox>
+                      {tweet.user.icon_urls ? (
+                        <ProfileIcon src={tweet.user.icon_urls} />
+                      ) : (
+                        <ProfileIconDummy />
+                      )}
+                      <NameTag>{tweet.user.name}</NameTag>{" "}
+                    </IconBox>
+                  </Link>
+                )}
                 <Link
                   to={`/tweets/${tweet.id}`}
                   style={{ textDecoration: "none" }}

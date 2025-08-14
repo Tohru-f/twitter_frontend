@@ -247,7 +247,7 @@ const TabButton = styled.button`
   border-bottom: 3px solid #08a9ff;
   `;
 
-export const ProfilePage = ({
+export const LoginUserPage = ({
   setUserTweets,
   setIsLoading,
   userTweets,
@@ -257,9 +257,6 @@ export const ProfilePage = ({
 
   // App.jsxで管理しているstateをContextで受け継ぐ
   const { userInfo, setUserInfo } = useContext(saveUserDataContext);
-
-  const location = useLocation();
-  const { tweet } = location.state || ""; //一覧ページからLinkで付与された値を受け取る
 
   // プロフィールモーダル表示に関するstate変数
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -292,18 +289,15 @@ export const ProfilePage = ({
     navigate(-1);
   };
 
-  // idを引数にとって指定のユーザーが持つ投稿データとユーザーデータを取得する
+  // ログインユーザーの投稿データを取得する
   useEffect(() => {
-    const describeUserAndTweets = async (id) => {
-      setIsLoading(true);
-      const response = await axiosInstance.get(`/users/${id}`, {
-        timeout: 5000,
-      });
+    const handleUserInfo = async () => {
+      const response = await axiosInstance.get("/users");
       console.log(response.data);
-      setUserTweets(response.data.data.tweets);
-      setIsLoading(false);
+      setUserInfo(response.data.data.user);
+      setUserTweets(response.data.data.user.tweets);
     };
-    describeUserAndTweets(id);
+    handleUserInfo();
   }, []);
 
   // tweetが空(undefined)の場合はプロフィールメニューからの遷移とみなし、それ以外は投稿データのリンクからの遷移とみなす。
@@ -316,47 +310,50 @@ export const ProfilePage = ({
             <ArrowImage src={ArrowLeftImage} width={24} height={24} />
           </ArrowButton>
           <NameAdnPostNumber>
-            <NameTag>{tweet.user.name}</NameTag>
-            <PostNumber>{`${tweet.user.tweets.length} 件のポスト`}</PostNumber>
+            <NameTag>{userInfo.name}</NameTag>
+            <PostNumber>{`${userTweets.length} 件のポスト`}</PostNumber>
           </NameAdnPostNumber>
         </ArrowAndName>
         <BackgroundAndIconBox>
-          {tweet.user.header_urls ? (
-            <HeaderImage src={tweet.user.header_urls} />
+          {userInfo.header_urls ? (
+            <HeaderImage src={userInfo.header_urls} />
           ) : (
             <BackgroundArea />
           )}
           <ProfileIconAndEditButton>
-            {tweet.user.icon_urls ? (
-              <ProfileIcon src={tweet.user.icon_urls} />
+            {userInfo.icon_urls ? (
+              <ProfileIcon src={userInfo.icon_urls} />
             ) : (
               <ProfileDummySpace />
             )}
+            <EditButton onClick={openProfileModalHandler}>
+              プロフィール編集
+            </EditButton>
           </ProfileIconAndEditButton>
         </BackgroundAndIconBox>
         <ProfileDetailBox>
-          <NameTag>{tweet.user.name}</NameTag>
-          <ProfileDetail>{tweet.user.profile}</ProfileDetail>
+          <NameTag>{userInfo.name}</NameTag>
+          <ProfileDetail>{userInfo.profile}</ProfileDetail>
           <LocationAndWebsiteBox>
             <LocationBox>
               <LocationIcon src={LocationImage} width={24} height={24} />
-              <LocationTag>{tweet.user.location}</LocationTag>
+              <LocationTag>{userInfo.location}</LocationTag>
             </LocationBox>
             <WebsiteBox>
               <WebsiteIcon src={WebsiteImage} />
-              <WebsiteTag href={tweet.user.website}>
-                {tweet.user.website}
+              <WebsiteTag href={userInfo.website}>
+                {userInfo.website}
               </WebsiteTag>
             </WebsiteBox>
           </LocationAndWebsiteBox>
           <BirthdayAndStartMonthBox>
             <BirthdayBox>
               <BirthdayIcon src={CakeImage} />
-              <BirthdayTag>{`誕生日：${tweet.user.birthday}`}</BirthdayTag>
+              <BirthdayTag>{`誕生日：${userInfo.birthday}`}</BirthdayTag>
             </BirthdayBox>
             <StartMonthBox>
               <CalendarIcon src={CalendarImage} />
-              <StartMonthTag>{`${dayjs(tweet.user.created_at).format(
+              <StartMonthTag>{`${dayjs(userInfo.created_at).format(
                 "YYYY年MM月"
               )}からXを利用しています。`}</StartMonthTag>
             </StartMonthBox>
@@ -388,7 +385,6 @@ export const ProfilePage = ({
               userTweets={userTweets}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
-              show={showProfileModal}
             />
           )}
           {activeTab === "comment_back" && <CommentBackComponent />}
@@ -396,6 +392,15 @@ export const ProfilePage = ({
         </TweetBox>
       </ProfileBox>
       <SearchBar />
+      <ProfileEditModal
+        show={showProfileModal}
+        close={closeProfileModalHandler}
+        headerImage={headerImage}
+        setHeaderImage={setHeaderImage}
+        iconImage={iconImage}
+        setIconImage={setIconImage}
+        setUserTweets={setUserTweets}
+      />
     </MainSpace>
   );
 };

@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from "react";
 import styled from "styled-components";
 import GoogleIconImage from "../../assets/google_icon.png";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { saveUserData } from "../../App";
 
 const Button = styled.button`
   background-color: white;
@@ -21,7 +20,6 @@ const Button = styled.button`
 
 export function GoogleIcon() {
   const [searchParams] = useSearchParams();
-  const loginUser = useContext(saveUserData);
   const navigate = useNavigate();
 
   const handleGoogleLogin = () => {
@@ -39,19 +37,11 @@ export function GoogleIcon() {
       const access_token = searchParams.get("access-token");
       const client = searchParams.get("client");
       const uid = searchParams.get("uid");
-      const login_userid = searchParams.get("login_userid");
-      loginUser.name = searchParams.get("name");
-      loginUser.profile = searchParams.get("profile");
-      loginUser.location = searchParams.get("location");
-      loginUser.website = searchParams.get("website");
-      loginUser.birthday = searchParams.get("birthday");
-      console.log(loginUser);
 
       // ローカルストレージにトークン情報を保管
       localStorage.setItem("access-token", access_token);
       localStorage.setItem("client", client);
       localStorage.setItem("uid", uid);
-      localStorage.setItem("login_userid", login_userid);
 
       // ログイン後のメインページへ遷移
       navigate("/main");

@@ -3,48 +3,44 @@ import { LoginPages } from "./components/pages/LoginPages";
 import { MainPages } from "./components/pages/MainPages";
 import { TweetDetailsPages } from "./components/pages/TweetDetailsPages";
 import { ProfilePage } from "./components/pages/ProfilePage";
-import { createContext, useState } from "react";
-import { axiosInstance } from "./utils/HandleAxios";
-
-export const describeFunction = createContext({});
-export const saveUserData = createContext({});
+import { useState } from "react";
+import { LoginUserPage } from "./components/pages/LoginUserPage";
+import { UserDataProvider } from "./components/providers/UserDataProvider";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [userTweets, setUserTweets] = useState([]);
-  const [userInfo, setUserInfo] = useState({});
-
-  // idを引数にとって指定のユーザーが持つ投稿データとユーザーデータを取得する
-  const describeUserAndTweets = async (id) => {
-    setIsLoading(true);
-    const response = await axiosInstance.get(`/users/${id}`, { timeout: 5000 });
-    console.log(response.data);
-    setUserTweets(response.data.data.tweets);
-    setIsLoading(false);
-  };
 
   return (
-    <saveUserData.Provider value={{ userInfo, setUserInfo, userTweets }}>
-      <describeFunction.Provider value={{ describeUserAndTweets }}>
-        <Routes>
-          <Route path="/" element={<LoginPages />} />
-          <Route path="/main/*" element={<MainPages />} />
-          <Route path="/tweets/:id" element={<TweetDetailsPages />} />
-          <Route
-            path="/users/:id"
-            element={
-              <ProfilePage
-                describeUserAndTweets={describeUserAndTweets}
-                setIsLoading={setIsLoading}
-                setUserTweets={setUserTweets}
-                userTweets={userTweets}
-                isLoading={isLoading}
-              />
-            }
-          />
-        </Routes>
-      </describeFunction.Provider>
-    </saveUserData.Provider>
+    <UserDataProvider>
+      <Routes>
+        <Route path="/" element={<LoginPages />} />
+        <Route path="/main/*" element={<MainPages />} />
+        <Route path="/tweets/:id" element={<TweetDetailsPages />} />
+        <Route
+          path="/profile"
+          element={
+            <LoginUserPage
+              setIsLoading={setIsLoading}
+              setUserTweets={setUserTweets}
+              userTweets={userTweets}
+              isLoading={isLoading}
+            />
+          }
+        />
+        <Route
+          path="/users/:id"
+          element={
+            <ProfilePage
+              setIsLoading={setIsLoading}
+              setUserTweets={setUserTweets}
+              userTweets={userTweets}
+              isLoading={isLoading}
+            />
+          }
+        />
+      </Routes>
+    </UserDataProvider>
   );
 }
 

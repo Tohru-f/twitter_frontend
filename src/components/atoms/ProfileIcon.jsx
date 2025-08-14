@@ -29,10 +29,9 @@ const Span = styled.span`
 
 export const ProfileIcon = () => {
   const navigate = useNavigate();
-  let login_userid = localStorage.getItem("login_userid");
 
   return (
-    <Button onClick={() => navigate(`/users/${login_userid}`)}>
+    <Button onClick={() => navigate("/profile")}>
       <img src={ProfileIconImage} alt="home" width={30} height={30} />
       <Span>プロフィール</Span>
     </Button>

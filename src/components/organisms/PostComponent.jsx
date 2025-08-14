@@ -64,12 +64,7 @@ const LoadingTag = styled.h2`
   color: white;
 `;
 
-export const PostComponent = ({
-  userTweets,
-  describeUserAndTweets,
-  isLoading,
-  setIsLoading,
-}) => {
+export const PostComponent = ({ userTweets, isLoading, setIsLoading }) => {
   // パラメーターからidを取得する
   const { id } = useParams();
 
@@ -78,7 +73,6 @@ export const PostComponent = ({
   // パラメーターから取得したuser_idを使ってユーザーデータを取得・表示する
   useEffect(() => {
     setIsLoading(true);
-    describeUserAndTweets(id);
     setIsLoading(false);
   }, []);
 

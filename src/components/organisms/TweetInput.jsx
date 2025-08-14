@@ -6,9 +6,9 @@ import toast, { Toaster } from "react-hot-toast";
 import { handleTweet } from "../../utils/HandleTweet";
 import { HandlePreview } from "../../utils/HandlePreview";
 import { ImageIcon } from "../atoms/ImageIcon";
-import { saveUserData } from "../../App";
 import { axiosInstance } from "../../utils/HandleAxios";
 import { Link } from "react-router-dom";
+import { saveUserDataContext } from "../providers/UserDataProvider";
 
 const TweetSpace = styled.div`
   border-top: solid 1px #3b3b3b;
@@ -105,7 +105,8 @@ export const TweetInput = () => {
   const fileInputRef = useRef(null);
 
   // App.jsxで管理しているstateをContextで受け継ぐ
-  const { userInfo, setUserInfo } = useContext(saveUserData);
+  const { userInfo, setUserInfo } = useContext(saveUserDataContext);
+  // const [userInfo, setUserInfo] = useState({});
 
   // 画像が選択された時点でフォームの高さを調整したいので、画像の高さを取得してCSSに反映
   const onImageLoad = (e) => {

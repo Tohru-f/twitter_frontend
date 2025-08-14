@@ -1,5 +1,6 @@
 import axios from "axios";
 import React from "react";
+import AxiosBaseService from "../services/AxiosBaseService";
 
 export const axiosInstance = axios.create({
   timeout: 3000,

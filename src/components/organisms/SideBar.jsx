@@ -23,7 +23,7 @@ const SidePart = styled.div`
   width: 45%;
 `;
 
-export const SideBar = ({ openPostModalHandler, describeUserAndTweets }) => {
+export const SideBar = ({ openPostModalHandler }) => {
   return (
     <SideSpace>
       <SidePart>
@@ -32,7 +32,7 @@ export const SideBar = ({ openPostModalHandler, describeUserAndTweets }) => {
         <NotificationIcon />
         <MessageIcon />
         <BookmarkIcon />
-        <ProfileIcon describeUserAndTweets={describeUserAndTweets} />
+        <ProfileIcon />
         <RaisePostModalIcon
           width="200px"
           openPostModalHandler={openPostModalHandler}

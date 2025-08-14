@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { FloatingInput } from "../molecules/FloatingInput";
 import { axiosInstance } from "../../utils/HandleAxios";
-import { saveUserData } from "../../App";
 import CameraImage from "../../assets/camera.png";
+import { saveUserDataContext } from "../providers/UserDataProvider";
 
 const Modal = styled.div`
   position: fixed;
@@ -196,9 +196,11 @@ export const ProfileEditModal = ({
   setHeaderImage,
   iconImage,
   setIconImage,
+  setUserTweets,
 }) => {
   // App.jsxで管理しているstateをContextで受け継ぐ
-  const { userInfo, setUserInfo } = useContext(saveUserData);
+  const { userInfo, setUserInfo } = useContext(saveUserDataContext);
+  // const [userInfo, setUserInfo] = useState({});
 
   // ヘッダーとアイコンについてプレビュー画像のURLを管理
   const [headerPreview, setHeaderPreview] = useState([]);
@@ -216,9 +218,6 @@ export const ProfileEditModal = ({
       [name]: value,
     });
   };
-
-  // プロフィール更新時にAPI通信で使うログインユーザーIDをローカルストレージから取得
-  const login_userid = localStorage.getItem("login_userid");
 
   // プロフィール情報とアイコン、ヘッダー画像を更新
   const handleUserInfoSave = async () => {
@@ -260,7 +259,7 @@ export const ProfileEditModal = ({
       }
     }
     // 新しいプロフィール情報と画像idを使ってプロフィールを更新する
-    const response = await axiosInstance.put(`/users/${login_userid}`, {
+    const response = await axiosInstance.put("/profile", {
       name: userInfo.name,
       profile: userInfo.profile,
       location: userInfo.location,
@@ -288,6 +287,7 @@ export const ProfileEditModal = ({
       const response = await axiosInstance.get("/users");
       console.log(response.data);
       setUserInfo(response.data.data.user);
+      setUserTweets(response.data.data.user.tweets);
     };
     getLoginUserInfo();
   }, [show]);

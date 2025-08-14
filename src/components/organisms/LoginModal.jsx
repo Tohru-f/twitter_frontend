@@ -3,11 +3,9 @@ import styled from "styled-components";
 import { XLogo } from "../atoms/XLogo";
 import { FloatingInput } from "../molecules/FloatingInput";
 import axios from "axios";
-import AxiosBaseService from "../../services/AxiosBaseService";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { HandleError } from "../../utils/HandleError";
-import { saveUserData } from "../../App";
 
 const Modal = styled.div`
   position: fixed;
@@ -60,7 +58,6 @@ const Title = styled.span`
 `;
 
 export const LoginModal = ({ show, close }) => {
-  const loginUser = useContext(saveUserData);
   // userの初期データとして生成
   let defaultUser = {
     email: "",
@@ -101,13 +98,6 @@ export const LoginModal = ({ show, close }) => {
         localStorage.setItem("access-token", response.headers["access-token"]);
         localStorage.setItem("client", response.headers.client);
         localStorage.setItem("uid", response.headers.uid);
-        localStorage.setItem("login_userid", response.data.data.id);
-        loginUser.name = response.data.data.name;
-        loginUser.profile = response.data.data.profile;
-        loginUser.location = response.data.data.location;
-        loginUser.website = response.data.data.website;
-        loginUser.birthday = response.data.data.birthday;
-        console.log(loginUser);
         navigate("/main");
       }
     } catch (error) {

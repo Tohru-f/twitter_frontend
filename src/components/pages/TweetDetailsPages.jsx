@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
-import { ImageIcon } from "../atoms/ImageIcon";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SideBar } from "../organisms/SideBar";
 import { SearchBar } from "../organisms/SearchBar";
@@ -8,6 +7,7 @@ import ArrowLeftImage from "../../assets/arrow.png";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { saveUserDataContext } from "../providers/UserDataProvider";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -102,6 +102,9 @@ export const TweetDetailsPages = () => {
   const location = useLocation();
   const { tweet } = location.state; //一覧ページからLinkで付与された値を受け取る
 
+  // App.jsxで管理しているstateをContextで受け継ぐ
+  const { userInfo, setUserInfo } = useContext(saveUserDataContext);
+
   const navigate = useNavigate();
 
   const width = 95;
@@ -122,20 +125,37 @@ export const TweetDetailsPages = () => {
           </ArrowButton>
           <PostLetter>ポスト</PostLetter>
         </ArrowAndPost>
-        <Link
-          to={`/users/${tweet.user.id}`}
-          style={{ textDecoration: "none" }}
-          state={{ tweet: tweet }}
-        >
-          <NameAndIconBox>
-            {tweet.user.icon_urls ? (
-              <ProfileIcon src={tweet.user.icon_urls} />
-            ) : (
-              <ProfileDummyIcon />
-            )}
-            <NameTag>{tweet.user.name}</NameTag>
-          </NameAndIconBox>
-        </Link>
+        {userInfo.id === tweet.user.id ? (
+          <Link
+            to={"/profile"}
+            style={{ textDecoration: "none" }}
+            state={{ tweet: tweet }}
+          >
+            <NameAndIconBox>
+              {tweet.user.icon_urls ? (
+                <ProfileIcon src={tweet.user.icon_urls} />
+              ) : (
+                <ProfileDummyIcon />
+              )}
+              <NameTag>{tweet.user.name}</NameTag>
+            </NameAndIconBox>
+          </Link>
+        ) : (
+          <Link
+            to={`/users/${tweet.user.id}`}
+            style={{ textDecoration: "none" }}
+            state={{ tweet: tweet }}
+          >
+            <NameAndIconBox>
+              {tweet.user.icon_urls ? (
+                <ProfileIcon src={tweet.user.icon_urls} />
+              ) : (
+                <ProfileDummyIcon />
+              )}
+              <NameTag>{tweet.user.name}</NameTag>
+            </NameAndIconBox>
+          </Link>
+        )}
         <ContentBox>
           <ContentTag>{tweet.content}</ContentTag>
           {tweet.image_urls.length > 0 && (
