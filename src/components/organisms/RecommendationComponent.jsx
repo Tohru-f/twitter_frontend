@@ -109,7 +109,7 @@ export const RecommendationComponent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [totalTweets, setTotalTweets] = useState(0);
 
-  // App.jsxで管理しているstateをContextで受け継ぐ
+  // グローバルステートのログインユーザーを取得
   const { userInfo, setUserInfo } = useContext(saveUserDataContext);
 
   // newOffset, newPage, maxPagesはstate変数のままで管理するとレンダリングできないので、ローカル変数を使用

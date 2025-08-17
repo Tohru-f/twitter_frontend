@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SideBar } from "../organisms/SideBar.jsx";
 import { SearchBar } from "../organisms/SearchBar.jsx";
 import styled from "styled-components";
@@ -11,10 +11,8 @@ import { PostComponent } from "../organisms/PostComponent.jsx";
 import { CommentBackComponent } from "../organisms/CommentBackComponent.jsx";
 import { LikeComponent } from "../organisms/LikeComponent.jsx";
 import CalendarImage from "../../assets/calendar.png";
-import { ProfileEditModal } from "../organisms/ProfileEditModal.jsx";
 import dayjs from "dayjs";
 import { axiosInstance } from "../../utils/HandleAxios.jsx";
-import { saveUserDataContext } from "../providers/UserDataProvider.jsx";
 
 const MainSpace = styled.div`
   display: flex;
@@ -247,37 +245,18 @@ const TabButton = styled.button`
   border-bottom: 3px solid #08a9ff;
   `;
 
-export const ProfilePage = ({
-  setUserTweets,
-  setIsLoading,
-  userTweets,
-  isLoading,
-}) => {
+export const ProfilePage = () => {
   const navigate = useNavigate();
 
-  // App.jsxで管理しているstateをContextで受け継ぐ
-  const { userInfo, setUserInfo } = useContext(saveUserDataContext);
+  // PostComponentで投稿情報を取得中の際にローディング画面の表示管理で使用
+  const [isLoading, setIsLoading] = useState(true);
 
   const location = useLocation();
   const { tweet } = location.state || ""; //一覧ページからLinkで付与された値を受け取る
 
-  // プロフィールモーダル表示に関するstate変数
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  // プロフィールモーダルを表示に切り返る
-  const openProfileModalHandler = () => {
-    setShowProfileModal(true);
-    setHeaderImage([]);
-  };
-  // プロフィールモーダルを非表示に切り替える
-  const closeProfileModalHandler = () => setShowProfileModal(false);
-
   const [activeTab, setActiveTab] = useState("post");
 
-  // プロフィールのヘッダー画像を管理する
-  const [headerImage, setHeaderImage] = useState([]);
-
-  // プロフィールのアイコン画像を管理する
-  const [iconImage, setIconImage] = useState([]);
+  const [userTweets, setUserTweets] = useState([]);
 
   // パラメーターからidを取得する
   const { id } = useParams();
@@ -384,12 +363,7 @@ export const ProfilePage = ({
             </TabButton>
           </ProfileTabs>
           {activeTab === "post" && (
-            <PostComponent
-              userTweets={userTweets}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-              show={showProfileModal}
-            />
+            <PostComponent userTweets={userTweets} isLoading={isLoading} />
           )}
           {activeTab === "comment_back" && <CommentBackComponent />}
           {activeTab === "like" && <LikeComponent />}

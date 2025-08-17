@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import dayjs from "dayjs";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const UserTweetBox = styled.div`
   display: flex;
@@ -64,60 +64,49 @@ const LoadingTag = styled.h2`
   color: white;
 `;
 
-export const PostComponent = ({ userTweets, isLoading, setIsLoading }) => {
-  // パラメーターからidを取得する
-  const { id } = useParams();
-
+export const PostComponent = ({ userTweets, isLoading }) => {
   const width = 100;
 
-  // パラメーターから取得したuser_idを使ってユーザーデータを取得・表示する
-  useEffect(() => {
-    setIsLoading(true);
-    setIsLoading(false);
-  }, []);
-
+  if (userTweets.length === 0 || isLoading)
+    return <LoadingTag>Now Loading...</LoadingTag>;
   return (
     <>
-      {!!userTweets && isLoading === false ? (
-        userTweets.map((tweet) => (
-          <Link
-            key={tweet.id}
-            to={`/tweets/${tweet.id}`}
-            style={{ textDecoration: "none" }}
-            state={{
-              tweet: tweet,
-            }} /* 詳細ページへ値を渡す */
-          >
-            <UserTweetBox>
-              <IconBox>
-                {tweet.user.icon_urls ? (
-                  <ProfileIcon src={tweet.user.icon_urls} />
-                ) : (
-                  <ProfileDummyIcon />
-                )}
-              </IconBox>
-              <ContentBox>
-                <NameAndTimeBox>
-                  <NameTag>{tweet.user.name}</NameTag>
-                  <TimeTag>
-                    {dayjs(tweet.created_at).format("YYYY年MM月DD日")}
-                  </TimeTag>
-                </NameAndTimeBox>
-                <ContentTag>{tweet.content}</ContentTag>
-                {tweet.image_urls.length > 0 && (
-                  <TweetedImage
-                    src={tweet.image_urls}
-                    width={width + "%"}
-                    height="auto"
-                  />
-                )}
-              </ContentBox>
-            </UserTweetBox>
-          </Link>
-        ))
-      ) : (
-        <LoadingTag>Now Loading...</LoadingTag>
-      )}
+      {userTweets.map((tweet) => (
+        <Link
+          key={tweet.id}
+          to={`/tweets/${tweet.id}`}
+          style={{ textDecoration: "none" }}
+          state={{
+            tweet: tweet,
+          }} /* 詳細ページへ値を渡す */
+        >
+          <UserTweetBox>
+            <IconBox>
+              {tweet.user.icon_urls ? (
+                <ProfileIcon src={tweet.user.icon_urls} />
+              ) : (
+                <ProfileDummyIcon />
+              )}
+            </IconBox>
+            <ContentBox>
+              <NameAndTimeBox>
+                <NameTag>{tweet.user.name}</NameTag>
+                <TimeTag>
+                  {dayjs(tweet.created_at).format("YYYY年MM月DD日")}
+                </TimeTag>
+              </NameAndTimeBox>
+              <ContentTag>{tweet.content}</ContentTag>
+              {tweet.image_urls.length > 0 && (
+                <TweetedImage
+                  src={tweet.image_urls}
+                  width={width + "%"}
+                  height="auto"
+                />
+              )}
+            </ContentBox>
+          </UserTweetBox>
+        </Link>
+      ))}
     </>
   );
 };

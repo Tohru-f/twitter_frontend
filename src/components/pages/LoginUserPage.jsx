@@ -247,15 +247,15 @@ const TabButton = styled.button`
   border-bottom: 3px solid #08a9ff;
   `;
 
-export const LoginUserPage = ({
-  setUserTweets,
-  setIsLoading,
-  userTweets,
-  isLoading,
-}) => {
+export const LoginUserPage = () => {
   const navigate = useNavigate();
 
-  // App.jsxで管理しているstateをContextで受け継ぐ
+  const [userTweets, setUserTweets] = useState([]);
+
+  // PostComponentで投稿情報を取得中の際にローディング画面の表示管理で使用
+  const [isLoading, setIsLoading] = useState(true);
+
+  // グローバルステートのログインユーザーを取得
   const { userInfo, setUserInfo } = useContext(saveUserDataContext);
 
   // プロフィールモーダル表示に関するstate変数
@@ -292,10 +292,11 @@ export const LoginUserPage = ({
   // ログインユーザーの投稿データを取得する
   useEffect(() => {
     const handleUserInfo = async () => {
+      setIsLoading(true);
       const response = await axiosInstance.get("/users");
       console.log(response.data);
-      setUserInfo(response.data.data.user);
       setUserTweets(response.data.data.user.tweets);
+      setIsLoading(false);
     };
     handleUserInfo();
   }, []);
@@ -381,11 +382,7 @@ export const LoginUserPage = ({
             </TabButton>
           </ProfileTabs>
           {activeTab === "post" && (
-            <PostComponent
-              userTweets={userTweets}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-            />
+            <PostComponent userTweets={userTweets} isLoading={isLoading} />
           )}
           {activeTab === "comment_back" && <CommentBackComponent />}
           {activeTab === "like" && <LikeComponent />}

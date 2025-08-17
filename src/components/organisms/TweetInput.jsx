@@ -104,9 +104,8 @@ export const TweetInput = () => {
   // 画像選択ボタンから参照させるために使用
   const fileInputRef = useRef(null);
 
-  // App.jsxで管理しているstateをContextで受け継ぐ
+  // グローバルステートのログインユーザーを取得
   const { userInfo, setUserInfo } = useContext(saveUserDataContext);
-  // const [userInfo, setUserInfo] = useState({});
 
   // 画像が選択された時点でフォームの高さを調整したいので、画像の高さを取得してCSSに反映
   const onImageLoad = (e) => {
@@ -149,21 +148,11 @@ export const TweetInput = () => {
     setImagePreview((prev) => prev.filter((_, idx) => idx !== index));
   };
 
-  // 初期レンダリングの時にログインユーザーのデータを取得してuserInfoを書き換えてレンダリングする
-  useEffect(() => {
-    const getLoginUserInfo = async () => {
-      const response = await axiosInstance.get("/users");
-      console.log(response.data);
-      setUserInfo(response.data.data.user);
-    };
-    getLoginUserInfo();
-  }, []);
-
   return (
     // attachedImageHeightはプレビュー画像の高さ
     <TweetSpace $attachedimageheight={attachedImageHeight}>
       <PairBox>
-        <Link to={`/users/${userInfo.id}`}>
+        <Link to={"/profile"}>
           {userInfo.icon_urls ? (
             <ProfileIcon src={userInfo.icon_urls} />
           ) : (

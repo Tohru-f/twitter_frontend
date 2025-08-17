@@ -200,7 +200,6 @@ export const ProfileEditModal = ({
 }) => {
   // App.jsxで管理しているstateをContextで受け継ぐ
   const { userInfo, setUserInfo } = useContext(saveUserDataContext);
-  // const [userInfo, setUserInfo] = useState({});
 
   // ヘッダーとアイコンについてプレビュー画像のURLを管理
   const [headerPreview, setHeaderPreview] = useState([]);
