@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { XLogo } from "../atoms/XLogo";
 import { FloatingInput } from "../molecules/FloatingInput";
 import axios from "axios";
-import AxiosBaseService from "../../services/AxiosBaseService";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { HandleError } from "../../utils/HandleError";
+import { saveUserDataContext } from "../providers/UserDataProvider";
+import { axiosInstance } from "../../utils/HandleAxios";
 
 const Modal = styled.div`
   position: fixed;
@@ -44,6 +45,9 @@ const Button = styled.button`
   font-size: 17px;
   font-weight: bold;
   margin-top: 40px;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const Title = styled.span`
@@ -62,7 +66,11 @@ export const LoginModal = ({ show, close }) => {
     password: "",
   };
 
+  // ログインに必要なメールアドレスとパスワードを受け取る
   const [user, setUser] = useState(defaultUser);
+
+  // グローバルステートのログインユーザーを取得
+  const { userInfo, setUserInfo } = useContext(saveUserDataContext);
 
   // ログイン情報の入力対応処理、nameにはカラム(email, password)がvalueには入力値が入る
   const handleUserChange = (e) => {
@@ -83,11 +91,11 @@ export const LoginModal = ({ show, close }) => {
         toast.error("Email及びパスワードを両方入力してください。");
         return;
       }
-      const response = await axios.post("/users/sign_in", {
+      const response = await axios.post("/auth/sign_in", {
         email: user.email,
         password: user.password,
       });
-      console.log(response.data);
+      console.log(response.data.data);
       console.log(response.headers);
       console.log(new Date(response.headers.expiry * 1000));
       if (response.status === 200) {
@@ -96,7 +104,12 @@ export const LoginModal = ({ show, close }) => {
         localStorage.setItem("access-token", response.headers["access-token"]);
         localStorage.setItem("client", response.headers.client);
         localStorage.setItem("uid", response.headers.uid);
-        navigate("/main?page=1");
+
+        // ログインユーザーの情報をグローバルステートに保管
+        // const response = await axiosInstance.get("/users");
+        setUserInfo(response.data.data);
+
+        navigate("/main");
       }
     } catch (error) {
       HandleError(error);

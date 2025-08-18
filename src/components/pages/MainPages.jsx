@@ -13,19 +13,31 @@ const MainSpace = styled.div`
 `;
 
 export const MainPages = () => {
-  // モーダルの表示に関するstate変数
+  // 投稿モーダルの表示に関するstate変数
   const [showPostModal, setShowPostModal] = useState(false);
-  // モーダルを表示に切り替える
+  // 投稿モーダルを表示に切り替える
   const openPostModalHandler = () => setShowPostModal(true);
-  // モーダルを非表示に切り替える
+  // 投稿モーダルを非表示に切り替える
   const closePostModalHandler = () => setShowPostModal(false);
+  // プロフィールモーダル表示に関するstate変数
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  // プロフィールモーダルを表示に切り返る
+  const openProfileModalHandler = () => setShowProfileModal(true);
+  // プロフィールモーダルを非表示に切り替える
+  const closeProfileModalHandler = () => setShowProfileModal(false);
 
   return (
     <MainSpace>
-      <SideBar openPostModalHandler={openPostModalHandler} />
+      <SideBar
+        openPostModalHandler={openPostModalHandler}
+        openProfileModalHandler={openProfileModalHandler}
+      />
       <TweetView
         showPostModal={showPostModal}
         closePostModalHandler={closePostModalHandler}
+        showProfileModal={showProfileModal}
+        openProfileModalHandler={openProfileModalHandler}
+        closeProfileModalHandler={closeProfileModalHandler}
       />
       <SearchBar />
     </MainSpace>

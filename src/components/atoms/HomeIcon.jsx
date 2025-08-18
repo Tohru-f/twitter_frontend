@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import HomeIconImage from "../../assets/home.png";
+import { useNavigate } from "react-router-dom";
 
 const Button = styled.button`
   background-color: black;
@@ -27,8 +28,14 @@ const Span = styled.span`
 `;
 
 export const HomeIcon = () => {
+  const navigate = useNavigate();
+
+  const moveToMainPage = () => {
+    navigate("/main");
+  };
+
   return (
-    <Button>
+    <Button onClick={moveToMainPage}>
       <img src={HomeIconImage} alt="home" width={30} height={30} />
       <Span>ホーム</Span>
     </Button>

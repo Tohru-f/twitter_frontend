@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { ImageIcon } from "../atoms/ImageIcon";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs, { locale, extend } from "dayjs";
 import "dayjs/locale/ja";
@@ -9,6 +8,7 @@ import toast from "react-hot-toast";
 import { HandleOffset } from "../../utils/HandleOffset";
 import { HandlePagination } from "../../utils/HandlePagination";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { saveUserDataContext } from "../providers/UserDataProvider";
 
 // 投稿日の表示を現在の日付から「何日前」で表示する
 locale("ja");
@@ -19,32 +19,49 @@ const LinkedBox = styled.div`
 `;
 
 const TweetBox = styled.div`
-  width: 100%;
+  width: 85%;
   display: flex;
+  flex-flow: column;
   margin-top: 10px;
 `;
 
-const IconBox = styled.div`
-  margin-left: 10px;
-`;
-
-const NameAndTimeBox = styled.div`
+const IconAndNameAndTimeBox = styled.div`
   display: flex;
   margin-bottom: 0px;
 `;
 
+const IconBox = styled.div`
+  margin-left: 10px;
+  display: flex;
+`;
+
+const ProfileIcon = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+`;
+
+const ProfileIconDummy = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid white;
+`;
+
 const NameTag = styled.p`
-  margin: 0px;
+  margin: 0px 0px 0px 5px;
   font-weight: bold;
+  color: white;
 `;
 
 const TimeTag = styled.p`
   margin: 0px 0px 0px 10px;
+  color: white;
 `;
 
 const ContentBox = styled.div`
   width: 100%;
-  margin: 0px 10px 10px 10px;
+  margin: 0px 10px 10px 55px;
   word-break: break-all;
   color: white;
 `;
@@ -91,6 +108,9 @@ export const RecommendationComponent = () => {
   const [tweets, setTweets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalTweets, setTotalTweets] = useState(0);
+
+  // グローバルステートのログインユーザーを取得
+  const { userInfo, setUserInfo } = useContext(saveUserDataContext);
 
   // newOffset, newPage, maxPagesはstate変数のままで管理するとレンダリングできないので、ローカル変数を使用
   let maxPages = Math.ceil(totalTweets / 10);
@@ -255,24 +275,56 @@ export const RecommendationComponent = () => {
       {!!tweets &&
         tweets.map((tweet) => (
           <LinkedBox key={tweet.id}>
-            <Link
-              to={`/tweets/${tweet.id}`}
-              style={{ textDecoration: "none" }}
-              state={{
-                tweet: tweet,
-              }} /* 詳細ページへ値を渡す */
-            >
-              <TweetBox>
-                <IconBox>
-                  <ImageIcon />
-                </IconBox>
+            <TweetBox>
+              <IconAndNameAndTimeBox>
+                {/* プロフィール画面を分岐させる */}
+                {userInfo.id === tweet.user.id ? (
+                  <Link to={"/profile"} style={{ textDecoration: "none" }}>
+                    <IconBox>
+                      {tweet.user.icon_urls ? (
+                        <ProfileIcon src={tweet.user.icon_urls} />
+                      ) : (
+                        <ProfileIconDummy />
+                      )}
+                      <NameTag>{tweet.user.name}</NameTag>{" "}
+                    </IconBox>
+                  </Link>
+                ) : (
+                  <Link
+                    to={`/users/${tweet.user.id}`}
+                    style={{ textDecoration: "none" }}
+                    state={{
+                      tweet: tweet,
+                    }} /* プロフィールページへ値を渡す */
+                  >
+                    <IconBox>
+                      {tweet.user.icon_urls ? (
+                        <ProfileIcon src={tweet.user.icon_urls} />
+                      ) : (
+                        <ProfileIconDummy />
+                      )}
+                      <NameTag>{tweet.user.name}</NameTag>{" "}
+                    </IconBox>
+                  </Link>
+                )}
+                <Link
+                  to={`/tweets/${tweet.id}`}
+                  style={{ textDecoration: "none" }}
+                  state={{
+                    tweet: tweet,
+                  }} /* 詳細ページへ値を渡す */
+                >
+                  <TimeTag>{dayjs(tweet.created_at).fromNow()}</TimeTag>
+                </Link>
+              </IconAndNameAndTimeBox>
+              <Link
+                to={`/tweets/${tweet.id}`}
+                style={{ textDecoration: "none" }}
+                state={{
+                  tweet: tweet,
+                }} /* 詳細ページへ値を渡す */
+              >
                 <ContentBox>
-                  <NameAndTimeBox>
-                    {/* <p>{tweet.user.name}</p> */}
-                    <NameTag>名無しの権兵衛</NameTag>{" "}
-                    <TimeTag>{dayjs(tweet.created_at).fromNow()}</TimeTag>
-                    {/* プロフィール実装までの仮 */}
-                  </NameAndTimeBox>
                   <ContentTag>{tweet.content}</ContentTag>
                   {tweet.image_urls.length > 0 && (
                     <TweetedImage
@@ -282,8 +334,8 @@ export const RecommendationComponent = () => {
                     />
                   )}
                 </ContentBox>
-              </TweetBox>
-            </Link>
+              </Link>
+            </TweetBox>
           </LinkedBox>
         ))}
       <PaginationBox>

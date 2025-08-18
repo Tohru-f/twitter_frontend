@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import XHomeIconImage from "../../assets/logo-white.png";
+import { useNavigate } from "react-router-dom";
 
 const Button = styled.button`
   background-color: black;
@@ -25,8 +26,14 @@ const Button = styled.button`
 `;
 
 export const XHomeIcon = () => {
+  const navigate = useNavigate();
+
+  const moveToMainPage = () => {
+    navigate("/main");
+  };
+
   return (
-    <Button>
+    <Button onClick={moveToMainPage}>
       <img src={XHomeIconImage} alt="home" width={24} height={24} />
     </Button>
   );

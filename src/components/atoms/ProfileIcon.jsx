@@ -1,6 +1,7 @@
-import React from "react";
+import React, { use, useContext } from "react";
 import styled from "styled-components";
 import ProfileIconImage from "../../assets/profile.png";
+import { useNavigate } from "react-router-dom";
 
 const Button = styled.button`
   background-color: black;
@@ -27,8 +28,10 @@ const Span = styled.span`
 `;
 
 export const ProfileIcon = () => {
+  const navigate = useNavigate();
+
   return (
-    <Button>
+    <Button onClick={() => navigate("/profile")}>
       <img src={ProfileIconImage} alt="home" width={30} height={30} />
       <Span>プロフィール</Span>
     </Button>
