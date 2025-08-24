@@ -50,8 +50,9 @@ export function GoogleIcon() {
         localStorage.setItem("uid", uid);
 
         // ログインユーザーの情報をグローバルステートに保管
-        const response = await axiosInstance.get("/users");
+        const response = await axiosInstance.get("/login_users");
         setUserInfo(response.data.data.user);
+        console.log(response.data.data.user);
 
         // ログイン後のメインページへ遷移
         navigate("/main");

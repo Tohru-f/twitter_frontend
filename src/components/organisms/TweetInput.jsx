@@ -5,7 +5,6 @@ import { PostIcon } from "../atoms/PostIcon";
 import toast, { Toaster } from "react-hot-toast";
 import { handleTweet } from "../../utils/HandleTweet";
 import { HandlePreview } from "../../utils/HandlePreview";
-import { ImageIcon } from "../atoms/ImageIcon";
 import { axiosInstance } from "../../utils/HandleAxios";
 import { Link } from "react-router-dom";
 import { saveUserDataContext } from "../providers/UserDataProvider";

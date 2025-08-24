@@ -103,7 +103,7 @@ export const TweetDetailsPages = () => {
   const { tweet } = location.state; //一覧ページからLinkで付与された値を受け取る
 
   // App.jsxで管理しているstateをContextで受け継ぐ
-  const { userInfo, setUserInfo } = useContext(saveUserDataContext);
+  const { userInfo } = useContext(saveUserDataContext);
 
   const navigate = useNavigate();
 

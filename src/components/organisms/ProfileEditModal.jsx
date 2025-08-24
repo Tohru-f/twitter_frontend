@@ -16,10 +16,6 @@ const Modal = styled.div`
   border-radius: 15px;
   min-width: 50%;
   max-height: 80%;
-  // display: flex;
-  // flex-flow: column;
-  // justify-content: center;
-  // align-items: center;
   padding-top: 10px;
   overflow: auto;
   &::-webkit-scrollbar {
@@ -258,7 +254,7 @@ export const ProfileEditModal = ({
       }
     }
     // 新しいプロフィール情報と画像idを使ってプロフィールを更新する
-    const response = await axiosInstance.put("/profile", {
+    const response = await axiosInstance.put("/login_users", {
       name: userInfo.name,
       profile: userInfo.profile,
       location: userInfo.location,
@@ -283,7 +279,7 @@ export const ProfileEditModal = ({
   // モーダルの開閉時にはプロフィールの内容が書き換わっているので、showが変わる時に再レンダリングする
   useEffect(() => {
     const getLoginUserInfo = async () => {
-      const response = await axiosInstance.get("/users");
+      const response = await axiosInstance.get("/login_users");
       console.log(response.data);
       setUserInfo(response.data.data.user);
       setUserTweets(response.data.data.user.tweets);

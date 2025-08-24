@@ -15,6 +15,7 @@ import { ProfileEditModal } from "../organisms/ProfileEditModal.jsx";
 import dayjs from "dayjs";
 import { axiosInstance } from "../../utils/HandleAxios.jsx";
 import { saveUserDataContext } from "../providers/UserDataProvider.jsx";
+import { DeleteConfirmModal } from "../organisms/DeleteConfirmModal.jsx";
 
 const MainSpace = styled.div`
   display: flex;
@@ -256,7 +257,7 @@ export const LoginUserPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   // グローバルステートのログインユーザーを取得
-  const { userInfo, setUserInfo } = useContext(saveUserDataContext);
+  const { userInfo } = useContext(saveUserDataContext);
 
   // プロフィールモーダル表示に関するstate変数
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -279,6 +280,20 @@ export const LoginUserPage = () => {
   // パラメーターからidを取得する
   const { id } = useParams();
 
+  // 削除モーダル表示に関するstate変数
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState(false);
+
+  const [selectedId, setSelectedId] = useState(0);
+
+  // 削除モーダルを表示に切り返る
+  const openDeleteConfirmModalHandler = (id) => {
+    setDeleteConfirmModal(true);
+    setSelectedId(id);
+  };
+
+  // 削除モーダルを非表示に切り替える
+  const closeDeleteModalHandler = () => setDeleteConfirmModal(false);
+
   // タブの切り替えを管理
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -293,13 +308,22 @@ export const LoginUserPage = () => {
   useEffect(() => {
     const handleUserInfo = async () => {
       setIsLoading(true);
-      const response = await axiosInstance.get("/users");
+      const response = await axiosInstance.get("/login_users");
       console.log(response.data);
       setUserTweets(response.data.data.user.tweets);
       setIsLoading(false);
     };
     handleUserInfo();
   }, []);
+
+  // 投稿が削除された場合、直ちに再レンダリングして削除された投稿が残らないようにする。
+  useEffect(() => {
+    const updateUserTweets = async () => {
+      const response = await axiosInstance.get("/login_users");
+      setUserTweets(response.data.data.user.tweets);
+    };
+    updateUserTweets();
+  }, [deleteConfirmModal]);
 
   // tweetが空(undefined)の場合はプロフィールメニューからの遷移とみなし、それ以外は投稿データのリンクからの遷移とみなす。
   return (
@@ -382,7 +406,13 @@ export const LoginUserPage = () => {
             </TabButton>
           </ProfileTabs>
           {activeTab === "post" && (
-            <PostComponent userTweets={userTweets} isLoading={isLoading} />
+            <PostComponent
+              userTweets={userTweets}
+              isLoading={isLoading}
+              setUserTweets={setUserTweets}
+              show={deleteConfirmModal}
+              open={openDeleteConfirmModalHandler}
+            />
           )}
           {activeTab === "comment_back" && <CommentBackComponent />}
           {activeTab === "like" && <LikeComponent />}
@@ -397,6 +427,11 @@ export const LoginUserPage = () => {
         iconImage={iconImage}
         setIconImage={setIconImage}
         setUserTweets={setUserTweets}
+      />
+      <DeleteConfirmModal
+        show={deleteConfirmModal}
+        close={closeDeleteModalHandler}
+        id={selectedId}
       />
     </MainSpace>
   );
