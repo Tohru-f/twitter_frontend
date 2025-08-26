@@ -110,7 +110,7 @@ export const RecommendationComponent = () => {
   const [totalTweets, setTotalTweets] = useState(0);
 
   // グローバルステートのログインユーザーを取得
-  const { userInfo, setUserInfo } = useContext(saveUserDataContext);
+  const { userInfo } = useContext(saveUserDataContext);
 
   // newOffset, newPage, maxPagesはstate変数のままで管理するとレンダリングできないので、ローカル変数を使用
   let maxPages = Math.ceil(totalTweets / 10);

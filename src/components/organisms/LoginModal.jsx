@@ -105,9 +105,8 @@ export const LoginModal = ({ show, close }) => {
         localStorage.setItem("client", response.headers.client);
         localStorage.setItem("uid", response.headers.uid);
 
-        // ログインユーザーの情報をグローバルステートに保管
-        // const response = await axiosInstance.get("/users");
         setUserInfo(response.data.data);
+        console.log(response.data.data);
 
         navigate("/main");
       }

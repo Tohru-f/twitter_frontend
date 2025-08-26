@@ -8,15 +8,17 @@ import { UserDataProvider } from "./components/providers/UserDataProvider";
 
 function App() {
   return (
-    <UserDataProvider>
-      <Routes>
-        <Route path="/" element={<LoginPages />} />
-        <Route path="/main/*" element={<MainPages />} />
-        <Route path="/tweets/:id" element={<TweetDetailsPages />} />
-        <Route path="/profile" element={<LoginUserPage />} />
-        <Route path="/users/:id" element={<ProfilePage />} />
-      </Routes>
-    </UserDataProvider>
+    <>
+      <UserDataProvider>
+        <Routes>
+          <Route path="/" element={<LoginPages />} />
+          <Route path="/main/*" element={<MainPages />} />
+          <Route path="/tweets/:id" element={<TweetDetailsPages />} />
+          <Route path="/profile" element={<LoginUserPage />} />
+          <Route path="/users/:id" element={<ProfilePage />} />
+        </Routes>
+      </UserDataProvider>
+    </>
   );
 }
 
