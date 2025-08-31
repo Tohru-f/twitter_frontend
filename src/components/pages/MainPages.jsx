@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { SideBar } from "../organisms/SideBar";
 import { TweetView } from "../organisms/TweetView";
 import { SearchBar } from "../organisms/SearchBar";
+import { CommentModal } from "../organisms/CommentModal";
 
 const MainSpace = styled.div`
   background-color: black;
@@ -25,6 +26,14 @@ export const MainPages = () => {
   const openProfileModalHandler = () => setShowProfileModal(true);
   // プロフィールモーダルを非表示に切り替える
   const closeProfileModalHandler = () => setShowProfileModal(false);
+  // コメントモーダル表示に関するstate変数
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  // コメントモーダルを表示に切り替える
+  const openCommentModal = () => setShowCommentModal(true);
+  // コメントモーダルを非表示に切り替える
+  const closeCommentModal = () => setShowCommentModal(false);
+
+  const [tweetForComment, setTweetForComment] = useState("");
 
   return (
     <MainSpace>
@@ -38,8 +47,16 @@ export const MainPages = () => {
         showProfileModal={showProfileModal}
         openProfileModalHandler={openProfileModalHandler}
         closeProfileModalHandler={closeProfileModalHandler}
+        showCommentModal={showCommentModal}
+        openCommentModal={openCommentModal}
+        setTweetForComment={setTweetForComment}
       />
       <SearchBar />
+      <CommentModal
+        close={closeCommentModal}
+        show={showCommentModal}
+        tweet={tweetForComment}
+      />
     </MainSpace>
   );
 };
