@@ -18,7 +18,13 @@ const TweetBox = styled.div`
 }
 `;
 
-export const TweetView = ({ showPostModal, closePostModalHandler }) => {
+export const TweetView = ({
+  showPostModal,
+  closePostModalHandler,
+  openCommentModal,
+  setTweetForComment,
+  showCommentModal,
+}) => {
   // タブの切り替えを管理するstate変数
   const [activeTab, setActiveTab] = useState("recommendation");
 
@@ -31,7 +37,13 @@ export const TweetView = ({ showPostModal, closePostModalHandler }) => {
     <TweetBox>
       <TweetTabs activeTab={activeTab} onTabClick={handleTabClick} />
       <TweetInput />
-      {activeTab === "recommendation" && <RecommendationComponent />}
+      {activeTab === "recommendation" && (
+        <RecommendationComponent
+          open={openCommentModal}
+          setTweetForComment={setTweetForComment}
+          showCommentModal={showCommentModal}
+        />
+      )}
       {activeTab === "follow" && <FollowComponent />}
       <PostModal show={showPostModal} close={closePostModalHandler}></PostModal>
     </TweetBox>

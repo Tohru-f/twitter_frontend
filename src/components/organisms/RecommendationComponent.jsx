@@ -9,6 +9,10 @@ import { HandleOffset } from "../../utils/HandleOffset";
 import { HandlePagination } from "../../utils/HandlePagination";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { saveUserDataContext } from "../providers/UserDataProvider";
+import CommentImage from "../../assets/comment.png";
+import RepostImage from "../../assets/repost.png";
+import LikeImage from "../../assets/like.png";
+import NotBookmarkImage from "../../assets/not_bookmark.png";
 
 // 投稿日の表示を現在の日付から「何日前」で表示する
 locale("ja");
@@ -101,7 +105,34 @@ const NextButton = styled.button`
   border-radius: 5px;
 `;
 
-export const RecommendationComponent = () => {
+const IconsBox = styled.div`
+  display: flex;
+  justify-content: space-around;
+`;
+
+const IconAndNumber = styled.div`
+  display: flex;
+  align-items: start;
+`;
+
+const IconImage = styled.img`
+  width: 24px;
+  height: 24px;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const NumberPlate = styled.span`
+  color: white;
+  margin-left: 5px;
+`;
+
+export const RecommendationComponent = ({
+  open,
+  setTweetForComment,
+  showCommentModal,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -124,11 +155,11 @@ export const RecommendationComponent = () => {
   const [currentPage, setCurrentPage] = useState(null);
   let newPage;
 
-  // 初回レンダリング時、page変更時の投稿データを取得する
+  // 初回レンダリング時、page変更時の投稿データを取得する。コメント投稿後にも動かす
   useEffect(() => {
     setCurrentPage(page);
     describeDesignatedTweet(page);
-  }, [page]);
+  }, [page, showCommentModal]);
 
   // 現在のページから一つ前のページへ遷移する
   const describePrevTweet = async () => {
@@ -269,44 +300,60 @@ export const RecommendationComponent = () => {
     return pageNumbers;
   };
 
+  const handleCommentModal = (tweet) => {
+    open();
+    setTweetForComment(tweet);
+  };
+
   return (
     <>
       {isLoading && <h2>Now Loading...</h2>}
       {!!tweets &&
         tweets.map((tweet) => (
-          <LinkedBox key={tweet.id}>
-            <TweetBox>
-              <IconAndNameAndTimeBox>
-                {/* プロフィール画面を分岐させる */}
-                {userInfo.id === tweet.user.id ? (
-                  <Link to={"/profile"} style={{ textDecoration: "none" }}>
-                    <IconBox>
-                      {tweet.user.icon_urls ? (
-                        <ProfileIcon src={tweet.user.icon_urls} />
-                      ) : (
-                        <ProfileIconDummy />
-                      )}
-                      <NameTag>{tweet.user.name}</NameTag>{" "}
-                    </IconBox>
-                  </Link>
-                ) : (
+          <div key={tweet.id}>
+            <LinkedBox>
+              <TweetBox>
+                <IconAndNameAndTimeBox>
+                  {/* プロフィール画面を分岐させる */}
+                  {userInfo.id === tweet.user.id ? (
+                    <Link to={"/profile"} style={{ textDecoration: "none" }}>
+                      <IconBox>
+                        {tweet.user.icon_urls ? (
+                          <ProfileIcon src={tweet.user.icon_urls} />
+                        ) : (
+                          <ProfileIconDummy />
+                        )}
+                        <NameTag>{tweet.user.name}</NameTag>{" "}
+                      </IconBox>
+                    </Link>
+                  ) : (
+                    <Link
+                      to={`/users/${tweet.user.id}`}
+                      style={{ textDecoration: "none" }}
+                      state={{
+                        tweet: tweet,
+                      }} /* プロフィールページへ値を渡す */
+                    >
+                      <IconBox>
+                        {tweet.user.icon_urls ? (
+                          <ProfileIcon src={tweet.user.icon_urls} />
+                        ) : (
+                          <ProfileIconDummy />
+                        )}
+                        <NameTag>{tweet.user.name}</NameTag>{" "}
+                      </IconBox>
+                    </Link>
+                  )}
                   <Link
-                    to={`/users/${tweet.user.id}`}
+                    to={`/tweets/${tweet.id}`}
                     style={{ textDecoration: "none" }}
                     state={{
                       tweet: tweet,
-                    }} /* プロフィールページへ値を渡す */
+                    }} /* 詳細ページへ値を渡す */
                   >
-                    <IconBox>
-                      {tweet.user.icon_urls ? (
-                        <ProfileIcon src={tweet.user.icon_urls} />
-                      ) : (
-                        <ProfileIconDummy />
-                      )}
-                      <NameTag>{tweet.user.name}</NameTag>{" "}
-                    </IconBox>
+                    <TimeTag>{dayjs(tweet.created_at).fromNow()}</TimeTag>
                   </Link>
-                )}
+                </IconAndNameAndTimeBox>
                 <Link
                   to={`/tweets/${tweet.id}`}
                   style={{ textDecoration: "none" }}
@@ -314,29 +361,34 @@ export const RecommendationComponent = () => {
                     tweet: tweet,
                   }} /* 詳細ページへ値を渡す */
                 >
-                  <TimeTag>{dayjs(tweet.created_at).fromNow()}</TimeTag>
+                  <ContentBox>
+                    <ContentTag>{tweet.content}</ContentTag>
+                    {tweet.image_urls.length > 0 && (
+                      <TweetedImage
+                        src={tweet.image_urls}
+                        width={width + "%"}
+                        height="auto"
+                      />
+                    )}
+                  </ContentBox>
                 </Link>
-              </IconAndNameAndTimeBox>
-              <Link
-                to={`/tweets/${tweet.id}`}
-                style={{ textDecoration: "none" }}
-                state={{
-                  tweet: tweet,
-                }} /* 詳細ページへ値を渡す */
-              >
-                <ContentBox>
-                  <ContentTag>{tweet.content}</ContentTag>
-                  {tweet.image_urls.length > 0 && (
-                    <TweetedImage
-                      src={tweet.image_urls}
-                      width={width + "%"}
-                      height="auto"
-                    />
-                  )}
-                </ContentBox>
-              </Link>
-            </TweetBox>
-          </LinkedBox>
+              </TweetBox>
+            </LinkedBox>
+            <IconsBox>
+              <IconAndNumber>
+                <IconImage
+                  src={CommentImage}
+                  onClick={() => handleCommentModal(tweet)}
+                />
+                {tweet.comments.length > 0 && (
+                  <NumberPlate>{tweet.comments.length}</NumberPlate>
+                )}
+              </IconAndNumber>
+              <IconImage src={RepostImage} />
+              <IconImage src={LikeImage} />
+              <IconImage src={NotBookmarkImage} />
+            </IconsBox>
+          </div>
         ))}
       <PaginationBox>
         {/* 無限レンダリングが発生するので、onClick部分はアロー関数で定義 */}
