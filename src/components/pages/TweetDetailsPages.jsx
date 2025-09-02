@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SideBar } from "../organisms/SideBar";
@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { saveUserDataContext } from "../providers/UserDataProvider";
+import { axiosInstance } from "../../utils/HandleAxios";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -81,12 +82,13 @@ const PostLetter = styled.p`
 `;
 
 const TimeTag = styled.p`
-  // margin: 0px 0px 0px 10px;
+  margin: 0px 0px 0px 10px;
   color: #787878;
 `;
 
 const ContentBox = styled.div`
   width: 100%;
+  max-height: 40%;
   word-break: break-all;
   color: white;
   margin-left: 10px;
@@ -98,6 +100,28 @@ const ContentTag = styled.p`
   width: 99%;
 `;
 
+const ImageTag = styled.img`
+  width: 90%;
+  height: 70%;
+`;
+
+const LineBox = styled.div`
+  width: 100%;
+  height: 1px;
+  border-bottom: 1px #3b3b3b solid;
+  margin-bottom: 10px;
+`;
+
+const CommentBox = styled.div`
+  color: white;
+`;
+
+const CommentTag = styled.p`
+  color: white;
+  margin-left: 60px;
+  margin-top: 0px;
+`;
+
 export const TweetDetailsPages = () => {
   const location = useLocation();
   const { tweet } = location.state; //一覧ページからLinkで付与された値を受け取る
@@ -105,15 +129,26 @@ export const TweetDetailsPages = () => {
   // App.jsxで管理しているstateをContextで受け継ぐ
   const { userInfo } = useContext(saveUserDataContext);
 
+  const [comments, setComments] = useState([]);
+
   const navigate = useNavigate();
 
   const width = 95;
-  const height = 95;
+  const height = 90;
 
   // 一つ前のページに戻る
   const handleBack = () => {
     navigate(-1);
   };
+
+  useEffect(() => {
+    const getTweetComments = async () => {
+      const response = await axiosInstance.get(`/tweets/${tweet.id}/comments`);
+      console.log(response.data.data.comments);
+      setComments(response.data.data.comments);
+    };
+    getTweetComments();
+  }, []);
 
   return (
     <MainSpace>
@@ -158,13 +193,7 @@ export const TweetDetailsPages = () => {
         )}
         <ContentBox>
           <ContentTag>{tweet.content}</ContentTag>
-          {tweet.image_urls.length > 0 && (
-            <img
-              src={tweet.image_urls}
-              width={width + "%"}
-              height={height + "%"}
-            />
-          )}
+          {tweet.image_urls.length > 0 && <ImageTag src={tweet.image_urls} />}
           <TimeTag>
             {" "}
             {/* 時間の表示を午前・午後 何時何分 年・月・日で表示 */}
@@ -173,6 +202,22 @@ export const TweetDetailsPages = () => {
               .format("a hh:mm YYYY年MM月DD日")}
           </TimeTag>
         </ContentBox>
+        <LineBox />
+        {comments.map((comment) => (
+          <CommentBox key={comment.id}>
+            <NameAndIconBox>
+              {comment.user.icon_urls ? (
+                <ProfileIcon src={comment.user.icon_urls} />
+              ) : (
+                <ProfileDummyIcon />
+              )}
+              <NameTag>{comment.user.name}</NameTag>
+              <TimeTag>{dayjs(comment.created_at).fromNow()}</TimeTag>
+            </NameAndIconBox>
+            <CommentTag>{comment.content}</CommentTag>
+            <LineBox />
+          </CommentBox>
+        ))}
       </TweetBox>
       <SearchBar />
     </MainSpace>
