@@ -82,17 +82,6 @@ export const PostComponent = ({
 }) => {
   const width = 100;
 
-  // const handleDeleteButton = async (id) => {
-  //   const message = "削除しますか?";
-  //   const yes = window.confirm(message);
-  //   if (yes) {
-  //     const response = await axiosInstance.delete(`/tweets/${id}`);
-  //     console.log(response.data);
-  //   } else {
-  //     return;
-  //   }
-  // };
-
   if (userTweets.length === 0 || isLoading)
     return <LoadingTag>Now Loading...</LoadingTag>;
   return (

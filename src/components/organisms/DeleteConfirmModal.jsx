@@ -52,11 +52,14 @@ const MessageButton = styled.button`
   border-radius: 10px;
 `;
 
-export const DeleteConfirmModal = ({ close, id, show }) => {
+export const DeleteConfirmModal = ({ close, id, showTweet, showComment }) => {
   useEffect(() => {
     // showがtrue且つ、押下されたキーがEscapeボタンの場合に実行される
     const onKeyDownEsc = (event) => {
-      if (show && event.key === "Escape") {
+      if (
+        (showTweet && event.key === "Escape") ||
+        (showComment && event.key === "Escape")
+      ) {
         event.preventDefault();
         close();
       }
@@ -67,20 +70,38 @@ export const DeleteConfirmModal = ({ close, id, show }) => {
     return () => window.removeEventListener("keydown", onKeyDownEsc);
   }, [close]);
 
+  // ツイート削除で使うonClick用の関数
   const handleDeleteButton = async () => {
     const response = await axiosInstance.delete(`/tweets/${id}`);
     console.log(response.data);
     close();
   };
 
-  if (!show) return <></>;
+  // コメント削除で使うonClick用の関数
+  const handleDeleteButtonForComment = async () => {
+    const response = await axiosInstance.delete(`/comments/${id}`);
+    console.log(response.data);
+    close();
+  };
+
+  // ツイートとコメントの削除で共有使用。モーダルはツイート or コメントでonClickイベントを切り替える
+  if (!showTweet && !showComment) return <></>;
+
+  // 「はい」のButtonコンポーネントについてツイートとコメントで表示を切り替える
   return (
     <>
       <Overlay onClick={close}></Overlay>
       <Modal>
         <ConfirmContent>投稿データを削除しますか？</ConfirmContent>
         <MessageBox>
-          <MessageButton onClick={handleDeleteButton}>はい</MessageButton>
+          {showTweet && (
+            <MessageButton onClick={handleDeleteButton}>はい</MessageButton>
+          )}
+          {showComment && (
+            <MessageButton onClick={handleDeleteButtonForComment}>
+              はい
+            </MessageButton>
+          )}
           <MessageButton onClick={close}>いいえ</MessageButton>
         </MessageBox>
       </Modal>
