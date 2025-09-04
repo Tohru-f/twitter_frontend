@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
 import { Popover } from "radix-ui";
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
+import { saveUserDataContext } from "../providers/UserDataProvider";
 
 const LoadingTag = styled.h2`
   color: white;
@@ -42,6 +43,9 @@ const CommentTag = styled.p`
 `;
 
 export const CommentComponent = ({ userComments, isLoading, show, open }) => {
+  // グローバルステートのログインユーザーを取得
+  const { userInfo } = useContext(saveUserDataContext);
+
   if (userComments.length === 0 || isLoading)
     return <LoadingTag>Now Loading...</LoadingTag>;
   return (
@@ -54,33 +58,35 @@ export const CommentComponent = ({ userComments, isLoading, show, open }) => {
             <TimeTag>
               {dayjs(comment.created_at).format("YYYY年MM月DD日")}
             </TimeTag>
-            <Popover.Root>
-              <Popover.Trigger
-                className="PopoverTrigger"
-                style={{
-                  backgroundColor: "black",
-                  color: "white",
-                  margin: 0,
-                  border: "none",
-                }}
-              >
-                ...
-              </Popover.Trigger>
-              <Popover.Portal>
-                <Popover.Content
-                  className="PopoverContent"
+            {comment.user.id === userInfo.id && (
+              <Popover.Root>
+                <Popover.Trigger
+                  className="PopoverTrigger"
                   style={{
-                    color: "black",
-                    backgroundColor: "white",
-                    borderRadius: "5px",
-                    padding: "5px",
+                    backgroundColor: "black",
+                    color: "white",
+                    margin: 0,
+                    border: "none",
                   }}
-                  onClick={() => open(comment.id)}
                 >
-                  削除
-                </Popover.Content>
-              </Popover.Portal>
-            </Popover.Root>
+                  ...
+                </Popover.Trigger>
+                <Popover.Portal>
+                  <Popover.Content
+                    className="PopoverContent"
+                    style={{
+                      color: "black",
+                      backgroundColor: "white",
+                      borderRadius: "5px",
+                      padding: "5px",
+                    }}
+                    onClick={() => open(comment.id)}
+                  >
+                    削除
+                  </Popover.Content>
+                </Popover.Portal>
+              </Popover.Root>
+            )}
           </ProfileBox>
           <CommentTag>{comment.content}</CommentTag>
         </CommentBox>
