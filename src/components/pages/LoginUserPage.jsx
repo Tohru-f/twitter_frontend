@@ -429,7 +429,7 @@ export const LoginUserPage = () => {
         setUserTweets={setUserTweets}
       />
       <DeleteConfirmModal
-        show={deleteConfirmModal}
+        showTweet={deleteConfirmModal}
         close={closeDeleteModalHandler}
         id={selectedId}
       />

@@ -9,6 +9,8 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { saveUserDataContext } from "../providers/UserDataProvider";
 import { axiosInstance } from "../../utils/HandleAxios";
+import { Popover } from "radix-ui";
+import { DeleteConfirmModal } from "../organisms/DeleteConfirmModal";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -141,6 +143,20 @@ export const TweetDetailsPages = () => {
     navigate(-1);
   };
 
+  // 削除モーダル表示に関するstate変数
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState(false);
+
+  const [selectedId, setSelectedId] = useState(0);
+
+  // 削除モーダルを表示に切り返る
+  const openDeleteConfirmModalHandler = (id) => {
+    setDeleteConfirmModal(true);
+    setSelectedId(id);
+  };
+
+  // 削除モーダルを非表示に切り替える
+  const closeDeleteModalHandler = () => setDeleteConfirmModal(false);
+
   useEffect(() => {
     const getTweetComments = async () => {
       const response = await axiosInstance.get(`/tweets/${tweet.id}/comments`);
@@ -148,7 +164,7 @@ export const TweetDetailsPages = () => {
       setComments(response.data.data.comments);
     };
     getTweetComments();
-  }, []);
+  }, [deleteConfirmModal]);
 
   return (
     <MainSpace>
@@ -213,6 +229,33 @@ export const TweetDetailsPages = () => {
               )}
               <NameTag>{comment.user.name}</NameTag>
               <TimeTag>{dayjs(comment.created_at).fromNow()}</TimeTag>
+              <Popover.Root>
+                <Popover.Trigger
+                  className="PopoverTrigger"
+                  style={{
+                    backgroundColor: "black",
+                    color: "white",
+                    margin: 0,
+                    border: "none",
+                  }}
+                >
+                  ...
+                </Popover.Trigger>
+                <Popover.Portal>
+                  <Popover.Content
+                    className="PopoverContent"
+                    style={{
+                      color: "black",
+                      backgroundColor: "white",
+                      borderRadius: "5px",
+                      padding: "5px",
+                    }}
+                    onClick={() => openDeleteConfirmModalHandler(comment.id)}
+                  >
+                    削除
+                  </Popover.Content>
+                </Popover.Portal>
+              </Popover.Root>
             </NameAndIconBox>
             <CommentTag>{comment.content}</CommentTag>
             <LineBox />
@@ -220,6 +263,11 @@ export const TweetDetailsPages = () => {
         ))}
       </TweetBox>
       <SearchBar />
+      <DeleteConfirmModal
+        showComment={deleteConfirmModal}
+        id={selectedId}
+        close={closeDeleteModalHandler}
+      />
     </MainSpace>
   );
 };
