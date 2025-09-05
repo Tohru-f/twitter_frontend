@@ -8,7 +8,7 @@ import LocationImage from "../../assets/location.png";
 import WebsiteImage from "../../assets/link.png";
 import CakeImage from "../../assets/cake.png";
 import { PostComponent } from "../organisms/PostComponent.jsx";
-import { CommentBackComponent } from "../organisms/CommentBackComponent.jsx";
+import { CommentComponent } from "../organisms/CommentComponent.jsx";
 import { LikeComponent } from "../organisms/LikeComponent.jsx";
 import CalendarImage from "../../assets/calendar.png";
 import dayjs from "dayjs";
@@ -258,6 +258,8 @@ export const ProfilePage = () => {
 
   const [userTweets, setUserTweets] = useState([]);
 
+  const [userComments, setUserComments] = useState([]);
+
   // パラメーターからidを取得する
   const { id } = useParams();
 
@@ -280,6 +282,7 @@ export const ProfilePage = () => {
       });
       console.log(response.data);
       setUserTweets(response.data.data.tweets);
+      setUserComments(response.data.data.comments);
       setIsLoading(false);
     };
     describeUserAndTweets(id);
@@ -350,10 +353,10 @@ export const ProfilePage = () => {
               ポスト
             </TabButton>
             <TabButton
-              onClick={() => handleTabClick("comment_back")}
-              className={activeTab === "comment_back" ? "active" : ""}
+              onClick={() => handleTabClick("comment")}
+              className={activeTab === "comment" ? "active" : ""}
             >
-              返信
+              コメント
             </TabButton>
             <TabButton
               onClick={() => handleTabClick("like")}
@@ -365,7 +368,12 @@ export const ProfilePage = () => {
           {activeTab === "post" && (
             <PostComponent userTweets={userTweets} isLoading={isLoading} />
           )}
-          {activeTab === "comment_back" && <CommentBackComponent />}
+          {activeTab === "comment" && (
+            <CommentComponent
+              userComments={userComments}
+              isLoading={isLoading}
+            />
+          )}
           {activeTab === "like" && <LikeComponent />}
         </TweetBox>
       </ProfileBox>

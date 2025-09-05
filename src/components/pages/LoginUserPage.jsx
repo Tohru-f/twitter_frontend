@@ -8,7 +8,7 @@ import LocationImage from "../../assets/location.png";
 import WebsiteImage from "../../assets/link.png";
 import CakeImage from "../../assets/cake.png";
 import { PostComponent } from "../organisms/PostComponent.jsx";
-import { CommentBackComponent } from "../organisms/CommentBackComponent.jsx";
+import { CommentComponent } from "../organisms/CommentComponent.jsx";
 import { LikeComponent } from "../organisms/LikeComponent.jsx";
 import CalendarImage from "../../assets/calendar.png";
 import { ProfileEditModal } from "../organisms/ProfileEditModal.jsx";
@@ -251,6 +251,8 @@ const TabButton = styled.button`
 export const LoginUserPage = () => {
   const navigate = useNavigate();
 
+  const [userComments, setUserComments] = useState([]);
+
   const [userTweets, setUserTweets] = useState([]);
 
   // PostComponentで投稿情報を取得中の際にローディング画面の表示管理で使用
@@ -285,10 +287,21 @@ export const LoginUserPage = () => {
 
   const [selectedId, setSelectedId] = useState(0);
 
-  // 削除モーダルを表示に切り返る
+  // 表示する削除用のモーダルを管理するためのstate変数
+  const [tweetOrComment, setTweetOrComment] = useState("");
+
+  // 削除モーダルを表示に切り返る ツイート用
   const openDeleteConfirmModalHandler = (id) => {
     setDeleteConfirmModal(true);
     setSelectedId(id);
+    setTweetOrComment("tweet");
+  };
+
+  // 削除モーダルを表示に切り返る コメント用
+  const openDeleteConfirmModalHandlerForTweet = (id) => {
+    setDeleteConfirmModal(true);
+    setSelectedId(id);
+    setTweetOrComment("comment");
   };
 
   // 削除モーダルを非表示に切り替える
@@ -311,6 +324,7 @@ export const LoginUserPage = () => {
       const response = await axiosInstance.get("/login_users");
       console.log(response.data);
       setUserTweets(response.data.data.user.tweets);
+      setUserComments(response.data.data.user.comments);
       setIsLoading(false);
     };
     handleUserInfo();
@@ -321,6 +335,7 @@ export const LoginUserPage = () => {
     const updateUserTweets = async () => {
       const response = await axiosInstance.get("/login_users");
       setUserTweets(response.data.data.user.tweets);
+      setUserComments(response.data.data.user.comments);
     };
     updateUserTweets();
   }, [deleteConfirmModal]);
@@ -393,10 +408,10 @@ export const LoginUserPage = () => {
               ポスト
             </TabButton>
             <TabButton
-              onClick={() => handleTabClick("comment_back")}
-              className={activeTab === "comment_back" ? "active" : ""}
+              onClick={() => handleTabClick("comment")}
+              className={activeTab === "comment" ? "active" : ""}
             >
-              返信
+              コメント
             </TabButton>
             <TabButton
               onClick={() => handleTabClick("like")}
@@ -414,7 +429,14 @@ export const LoginUserPage = () => {
               open={openDeleteConfirmModalHandler}
             />
           )}
-          {activeTab === "comment_back" && <CommentBackComponent />}
+          {activeTab === "comment" && (
+            <CommentComponent
+              userComments={userComments}
+              isLoading={isLoading}
+              show={deleteConfirmModal}
+              open={openDeleteConfirmModalHandlerForTweet}
+            />
+          )}
           {activeTab === "like" && <LikeComponent />}
         </TweetBox>
       </ProfileBox>
@@ -428,11 +450,20 @@ export const LoginUserPage = () => {
         setIconImage={setIconImage}
         setUserTweets={setUserTweets}
       />
-      <DeleteConfirmModal
-        showTweet={deleteConfirmModal}
-        close={closeDeleteModalHandler}
-        id={selectedId}
-      />
+      {tweetOrComment === "tweet" && (
+        <DeleteConfirmModal
+          showTweet={deleteConfirmModal}
+          close={closeDeleteModalHandler}
+          id={selectedId}
+        />
+      )}
+      {tweetOrComment === "comment" && (
+        <DeleteConfirmModal
+          showComment={deleteConfirmModal}
+          close={closeDeleteModalHandler}
+          id={selectedId}
+        />
+      )}
     </MainSpace>
   );
 };
