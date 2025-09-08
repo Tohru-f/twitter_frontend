@@ -11,8 +11,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { saveUserDataContext } from "../providers/UserDataProvider";
 import CommentImage from "../../assets/comment.png";
 import RepostImage from "../../assets/repost.png";
+import Retweet_done from "../../assets/retweet-done.png";
+import Retweet_notyet from "../../assets/retweet-notyet.png";
 import LikeImage from "../../assets/like.png";
 import NotBookmarkImage from "../../assets/not_bookmark.png";
+import { axiosInstance } from "../../utils/HandleAxios";
 
 // 投稿日の表示を現在の日付から「何日前」で表示する
 locale("ja");
@@ -132,6 +135,7 @@ export const RecommendationComponent = ({
   open,
   setTweetForComment,
   showCommentModal,
+  tweetForComment,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -142,6 +146,9 @@ export const RecommendationComponent = ({
 
   // グローバルステートのログインユーザーを取得
   const { userInfo } = useContext(saveUserDataContext);
+
+  // 再レンダリングを誘発させるためのstate変数
+  const [update, setUpdate] = useState(false);
 
   // newOffset, newPage, maxPagesはstate変数のままで管理するとレンダリングできないので、ローカル変数を使用
   let maxPages = Math.ceil(totalTweets / 10);
@@ -159,7 +166,7 @@ export const RecommendationComponent = ({
   useEffect(() => {
     setCurrentPage(page);
     describeDesignatedTweet(page);
-  }, [page, showCommentModal]);
+  }, [page, showCommentModal, update]);
 
   // 現在のページから一つ前のページへ遷移する
   const describePrevTweet = async () => {
@@ -300,10 +307,30 @@ export const RecommendationComponent = ({
     return pageNumbers;
   };
 
+  // コメントモーダルの表示と対象ツイートをstate変数に登録する
   const handleCommentModal = (tweet) => {
     open();
     setTweetForComment(tweet);
   };
+
+  // リツイートを管理
+  const handleRetweet = async (id) => {
+    const response = await axiosInstance.post(`/tweets/${id}/retweets`);
+    console.log(response.data);
+    // state変数を反対の値に切り替えることで再レンダリングを誘発する
+    setUpdate(update ? false : true);
+  };
+
+  // リツイート削除を管理
+  const handleDeleteRetweet = async (id) => {
+    const response = await axiosInstance.delete(`/tweets/${id}/retweets`);
+    console.log(response.data);
+    // state変数を反対の値に切り替えることで再レンダリングを誘発する
+    setUpdate(update ? false : true);
+  };
+
+  // コンポーネント内で使用する変数。リツイートのアイコン表示に関してsome関数の結果を代入する
+  let retweeted;
 
   return (
     <>
@@ -384,7 +411,26 @@ export const RecommendationComponent = ({
                   <NumberPlate>{tweet.comments.length}</NumberPlate>
                 )}
               </IconAndNumber>
-              <IconImage src={RepostImage} />
+              <IconAndNumber>
+                {
+                  (retweeted = tweet.retweets.some(
+                    (retweet) => retweet.user.id === userInfo.id
+                  ) ? (
+                    <IconImage
+                      src={Retweet_done}
+                      onClick={() => handleDeleteRetweet(tweet.id)}
+                    />
+                  ) : (
+                    <IconImage
+                      src={Retweet_notyet}
+                      onClick={() => handleRetweet(tweet.id)}
+                    />
+                  ))
+                }
+                {tweet.retweets.length > 0 && (
+                  <NumberPlate>{tweet.retweets.length}</NumberPlate>
+                )}
+              </IconAndNumber>
               <IconImage src={LikeImage} />
               <IconImage src={NotBookmarkImage} />
             </IconsBox>

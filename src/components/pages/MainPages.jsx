@@ -32,7 +32,7 @@ export const MainPages = () => {
   const openCommentModal = () => setShowCommentModal(true);
   // コメントモーダルを非表示に切り替える
   const closeCommentModal = () => setShowCommentModal(false);
-
+  // コメントモーダルで表示するためのツイートを管理
   const [tweetForComment, setTweetForComment] = useState("");
 
   return (
@@ -50,6 +50,7 @@ export const MainPages = () => {
         showCommentModal={showCommentModal}
         openCommentModal={openCommentModal}
         setTweetForComment={setTweetForComment}
+        tweetForComment={tweetForComment}
       />
       <SearchBar />
       <CommentModal
