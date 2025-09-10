@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import dayjs from "dayjs";
 import { Link } from "react-router-dom";
 import { Popover } from "radix-ui";
 import { axiosInstance } from "../../utils/HandleAxios";
+import { saveUserDataContext } from "../providers/UserDataProvider";
 
 const UserTweetBox = styled.div`
   display: flex;
@@ -82,6 +83,9 @@ export const PostComponent = ({
 }) => {
   const width = 100;
 
+  // グローバルステートのログインユーザーを取得
+  const { userInfo } = useContext(saveUserDataContext);
+
   if (userTweets.length === 0 || isLoading)
     return <LoadingTag>Now Loading...</LoadingTag>;
   return (
@@ -101,33 +105,35 @@ export const PostComponent = ({
               <TimeTag>
                 {dayjs(tweet.created_at).format("YYYY年MM月DD日")}
               </TimeTag>
-              <Popover.Root>
-                <Popover.Trigger
-                  className="PopoverTrigger"
-                  style={{
-                    backgroundColor: "black",
-                    color: "white",
-                    margin: 0,
-                    border: "none",
-                  }}
-                >
-                  ...
-                </Popover.Trigger>
-                <Popover.Portal>
-                  <Popover.Content
-                    className="PopoverContent"
+              {tweet.user.id === userInfo.id && (
+                <Popover.Root>
+                  <Popover.Trigger
+                    className="PopoverTrigger"
                     style={{
-                      color: "black",
-                      backgroundColor: "white",
-                      borderRadius: "5px",
-                      padding: "5px",
+                      backgroundColor: "black",
+                      color: "white",
+                      margin: 0,
+                      border: "none",
                     }}
-                    onClick={() => open(tweet.id)}
                   >
-                    削除
-                  </Popover.Content>
-                </Popover.Portal>
-              </Popover.Root>
+                    ...
+                  </Popover.Trigger>
+                  <Popover.Portal>
+                    <Popover.Content
+                      className="PopoverContent"
+                      style={{
+                        color: "black",
+                        backgroundColor: "white",
+                        borderRadius: "5px",
+                        padding: "5px",
+                      }}
+                      onClick={() => open(tweet.id)}
+                    >
+                      削除
+                    </Popover.Content>
+                  </Popover.Portal>
+                </Popover.Root>
+              )}
             </NameAndTimeBox>
           </HeaderBox>
           <Link
