@@ -13,6 +13,8 @@ import CommentImage from "../../assets/comment.png";
 import RepostImage from "../../assets/repost.png";
 import Retweet_done from "../../assets/retweet-done.png";
 import Retweet_notyet from "../../assets/retweet-notyet.png";
+import Favorite_notyet from "../../assets/favorite-notyet.png";
+import Favorite_done from "../../assets/favorite-done.png";
 import LikeImage from "../../assets/like.png";
 import NotBookmarkImage from "../../assets/not_bookmark.png";
 import { axiosInstance } from "../../utils/HandleAxios";
@@ -332,6 +334,25 @@ export const RecommendationComponent = ({
   // コンポーネント内で使用する変数。リツイートのアイコン表示に関してsome関数の結果を代入する
   let retweeted;
 
+  // イイねを管理
+  const handleFavorite = async (id) => {
+    const response = await axiosInstance.post(`/tweets/${id}/favorites`);
+    console.log(response.data);
+    // state変数を反対の値に切り替えることで再レンダリングを誘発する
+    setUpdate(update ? false : true);
+  };
+
+  // イイね削除を管理
+  const handleDeleteFavorite = async (id) => {
+    const response = await axiosInstance.delete(`/tweets/${id}/favorites`);
+    console.log(response.data);
+    // state変数を反対の値に切り替えることで再レンダリングを誘発する
+    setUpdate(update ? false : true);
+  };
+
+  // コンポーネント内で使用する変数。イイねのアイコン表示に関してsome関数の結果を代入する
+  let favorite_done;
+
   return (
     <>
       {isLoading && <h2>Now Loading...</h2>}
@@ -431,7 +452,26 @@ export const RecommendationComponent = ({
                   <NumberPlate>{tweet.retweets.length}</NumberPlate>
                 )}
               </IconAndNumber>
-              <IconImage src={LikeImage} />
+              <IconAndNumber>
+                {
+                  (favorite_done = tweet.favorites.some(
+                    (favorite) => favorite.user.id === userInfo.id
+                  ) ? (
+                    <IconImage
+                      src={Favorite_done}
+                      onClick={() => handleDeleteFavorite(tweet.id)}
+                    />
+                  ) : (
+                    <IconImage
+                      src={Favorite_notyet}
+                      onClick={() => handleFavorite(tweet.id)}
+                    />
+                  ))
+                }
+                {tweet.favorites.length > 0 && (
+                  <NumberPlate>{tweet.favorites.length}</NumberPlate>
+                )}
+              </IconAndNumber>
               <IconImage src={NotBookmarkImage} />
             </IconsBox>
           </div>
