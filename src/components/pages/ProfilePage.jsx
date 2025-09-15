@@ -296,30 +296,33 @@ export const ProfilePage = () => {
     describeUserAndTweets(id);
   }, []);
 
-  useEffect(() => {
-    const getUpdatedDesignatedTweet = async () => {
-      const response = await axiosInstance.get(`/tweets/${tweetData.id}`);
-      console.log(response.data);
-      setTweetData(response.data.data.tweet);
-    };
-    getUpdatedDesignatedTweet();
-  }, [update]);
-
+  // ユーザーフォロー時の処理、tweetData変数はフォローしているユーザーにログインユーザーを追加している。
   const handleFollow = async (id) => {
     const response = await axiosInstance.post(`/users/${id}/follow`);
     console.log(response.data);
-    // state変数を反対の値に切り替えることで再レンダリングを誘発する
-    setUpdate(update ? false : true);
+    setTweetData({
+      ...tweetData,
+      user: {
+        ...tweetData.user,
+        followers: [...tweetData.user.followers, userInfo],
+      },
+    });
   };
 
+  // フォロー解除時の処理、tweetData変数はフォローしているユーザーからログインユーザーを削除している。
   const handleUnfollow = async (id) => {
     const response = await axiosInstance.delete(`/users/${id}/unfollow`);
     console.log(response.data);
-    // state変数を反対の値に切り替えることで再レンダリングを誘発する
-    setUpdate(update ? false : true);
+    setTweetData({
+      ...tweetData,
+      user: {
+        ...tweetData.user,
+        followers: tweetData.user.followers.filter(
+          (follower) => follower.id !== userInfo.id
+        ),
+      },
+    });
   };
-
-  let follower;
 
   // tweetが空(undefined)の場合はプロフィールメニューからの遷移とみなし、それ以外は投稿データのリンクからの遷移とみなす。
   return (
@@ -347,19 +350,17 @@ export const ProfilePage = () => {
             ) : (
               <ProfileDummySpace />
             )}
-            {
-              (follower = tweetData.user.followers.some(
-                (follower) => follower.id === userInfo.id
-              ) ? (
-                <EditButton onClick={() => handleUnfollow(tweetData.user.id)}>
-                  フォロー中
-                </EditButton>
-              ) : (
-                <EditButton onClick={() => handleFollow(tweetData.user.id)}>
-                  フォロー
-                </EditButton>
-              ))
-            }
+            {tweetData.user.followers.some(
+              (follower) => follower.id === userInfo.id
+            ) ? (
+              <EditButton onClick={() => handleUnfollow(tweetData.user.id)}>
+                フォロー中
+              </EditButton>
+            ) : (
+              <EditButton onClick={() => handleFollow(tweetData.user.id)}>
+                フォロー
+              </EditButton>
+            )}
           </ProfileIconAndEditButton>
         </BackgroundAndIconBox>
         <ProfileDetailBox>
