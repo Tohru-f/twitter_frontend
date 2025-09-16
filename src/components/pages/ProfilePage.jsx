@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { SideBar } from "../organisms/SideBar.jsx";
 import { SearchBar } from "../organisms/SearchBar.jsx";
 import styled from "styled-components";
@@ -13,6 +13,7 @@ import { LikeComponent } from "../organisms/LikeComponent.jsx";
 import CalendarImage from "../../assets/calendar.png";
 import dayjs from "dayjs";
 import { axiosInstance } from "../../utils/HandleAxios.jsx";
+import { saveUserDataContext } from "../providers/UserDataProvider.jsx";
 
 const MainSpace = styled.div`
   display: flex;
@@ -55,7 +56,7 @@ const ArrowButton = styled.button`
   }
 `;
 
-const NameAdnPostNumber = styled.div`
+const NameAndPostNumber = styled.div`
   display: flex;
   flex-flow: column;
   margin-left: 30px;
@@ -248,17 +249,24 @@ const TabButton = styled.button`
 export const ProfilePage = () => {
   const navigate = useNavigate();
 
+  // グローバルステートのログインユーザーを取得
+  const { userInfo } = useContext(saveUserDataContext);
+
   // PostComponentで投稿情報を取得中の際にローディング画面の表示管理で使用
   const [isLoading, setIsLoading] = useState(true);
 
   const location = useLocation();
   const { tweet } = location.state || ""; //一覧ページからLinkで付与された値を受け取る
+  const [tweetData, setTweetData] = useState(tweet); //一覧ページから受け取った値を初期値にして再レンダリング時は更新
 
   const [activeTab, setActiveTab] = useState("post");
 
   const [userTweets, setUserTweets] = useState([]);
 
   const [userComments, setUserComments] = useState([]);
+
+  // 再レンダリングを誘発させるためのstate変数
+  const [update, setUpdate] = useState(false);
 
   // パラメーターからidを取得する
   const { id } = useParams();
@@ -288,6 +296,34 @@ export const ProfilePage = () => {
     describeUserAndTweets(id);
   }, []);
 
+  // ユーザーフォロー時の処理、tweetData変数はフォローしているユーザーにログインユーザーを追加している。
+  const handleFollow = async (id) => {
+    const response = await axiosInstance.post(`/users/${id}/follow`);
+    console.log(response.data);
+    setTweetData({
+      ...tweetData,
+      user: {
+        ...tweetData.user,
+        followers: [...tweetData.user.followers, userInfo],
+      },
+    });
+  };
+
+  // フォロー解除時の処理、tweetData変数はフォローしているユーザーからログインユーザーを削除している。
+  const handleUnfollow = async (id) => {
+    const response = await axiosInstance.delete(`/users/${id}/unfollow`);
+    console.log(response.data);
+    setTweetData({
+      ...tweetData,
+      user: {
+        ...tweetData.user,
+        followers: tweetData.user.followers.filter(
+          (follower) => follower.id !== userInfo.id
+        ),
+      },
+    });
+  };
+
   // tweetが空(undefined)の場合はプロフィールメニューからの遷移とみなし、それ以外は投稿データのリンクからの遷移とみなす。
   return (
     <MainSpace>
@@ -297,48 +333,59 @@ export const ProfilePage = () => {
           <ArrowButton onClick={handleBack}>
             <ArrowImage src={ArrowLeftImage} width={24} height={24} />
           </ArrowButton>
-          <NameAdnPostNumber>
-            <NameTag>{tweet.user.name}</NameTag>
-            <PostNumber>{`${tweet.user.tweets.length} 件のポスト`}</PostNumber>
-          </NameAdnPostNumber>
+          <NameAndPostNumber>
+            <NameTag>{tweetData.user.name}</NameTag>
+            <PostNumber>{`${tweetData.user.tweets.length} 件のポスト`}</PostNumber>
+          </NameAndPostNumber>
         </ArrowAndName>
         <BackgroundAndIconBox>
-          {tweet.user.header_urls ? (
-            <HeaderImage src={tweet.user.header_urls} />
+          {tweetData.user.header_urls ? (
+            <HeaderImage src={tweetData.user.header_urls} />
           ) : (
             <BackgroundArea />
           )}
           <ProfileIconAndEditButton>
-            {tweet.user.icon_urls ? (
-              <ProfileIcon src={tweet.user.icon_urls} />
+            {tweetData.user.icon_urls ? (
+              <ProfileIcon src={tweetData.user.icon_urls} />
             ) : (
               <ProfileDummySpace />
+            )}
+            {tweetData.user.followers.some(
+              (follower) => follower.id === userInfo.id
+            ) ? (
+              <EditButton onClick={() => handleUnfollow(tweetData.user.id)}>
+                フォロー中
+              </EditButton>
+            ) : (
+              <EditButton onClick={() => handleFollow(tweetData.user.id)}>
+                フォロー
+              </EditButton>
             )}
           </ProfileIconAndEditButton>
         </BackgroundAndIconBox>
         <ProfileDetailBox>
-          <NameTag>{tweet.user.name}</NameTag>
-          <ProfileDetail>{tweet.user.profile}</ProfileDetail>
+          <NameTag>{tweetData.user.name}</NameTag>
+          <ProfileDetail>{tweetData.user.profile}</ProfileDetail>
           <LocationAndWebsiteBox>
             <LocationBox>
               <LocationIcon src={LocationImage} width={24} height={24} />
-              <LocationTag>{tweet.user.location}</LocationTag>
+              <LocationTag>{tweetData.user.location}</LocationTag>
             </LocationBox>
             <WebsiteBox>
               <WebsiteIcon src={WebsiteImage} />
-              <WebsiteTag href={tweet.user.website}>
-                {tweet.user.website}
+              <WebsiteTag href={tweetData.user.website}>
+                {tweetData.user.website}
               </WebsiteTag>
             </WebsiteBox>
           </LocationAndWebsiteBox>
           <BirthdayAndStartMonthBox>
             <BirthdayBox>
               <BirthdayIcon src={CakeImage} />
-              <BirthdayTag>{`誕生日：${tweet.user.birthday}`}</BirthdayTag>
+              <BirthdayTag>{`誕生日：${tweetData.user.birthday}`}</BirthdayTag>
             </BirthdayBox>
             <StartMonthBox>
               <CalendarIcon src={CalendarImage} />
-              <StartMonthTag>{`${dayjs(tweet.user.created_at).format(
+              <StartMonthTag>{`${dayjs(tweetData.user.created_at).format(
                 "YYYY年MM月"
               )}からXを利用しています。`}</StartMonthTag>
             </StartMonthBox>
