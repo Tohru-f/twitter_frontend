@@ -105,8 +105,11 @@ export const LoginModal = ({ show, close }) => {
         localStorage.setItem("client", response.headers.client);
         localStorage.setItem("uid", response.headers.uid);
 
-        setUserInfo(response.data.data);
-        console.log(response.data.data);
+        // ログイン時点でユーザー情報にpassive_notificationsが含まれていないので、通知画面に遷移してもエラーが発生する
+        // ここの時点でAPI側からユーザー情報をpassive_notificationsを含めて取得すべきだ
+        const responseUserInfo = await axiosInstance.get("/login_users");
+        setUserInfo(responseUserInfo.data.data.user);
+        console.log(responseUserInfo.data.data.user);
 
         navigate("/main");
       }
