@@ -5,6 +5,7 @@ import { TweetDetailsPages } from "./components/pages/TweetDetailsPages";
 import { ProfilePage } from "./components/pages/ProfilePage";
 import { LoginUserPage } from "./components/pages/LoginUserPage";
 import { UserDataProvider } from "./components/providers/UserDataProvider";
+import { NotificationPage } from "./components/pages/NotificationPage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/tweets/:id" element={<TweetDetailsPages />} />
           <Route path="/profile" element={<LoginUserPage />} />
           <Route path="/users/:id" element={<ProfilePage />} />
+          <Route path="/notification" element={<NotificationPage />} />
         </Routes>
       </UserDataProvider>
     </>

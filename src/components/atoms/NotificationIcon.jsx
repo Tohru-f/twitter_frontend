@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import NotificationIconImage from "../../assets/notification.png";
+import { useNavigate } from "react-router-dom";
 
 const Button = styled.button`
   background-color: black;
@@ -27,8 +28,13 @@ const Span = styled.span`
 `;
 
 export const NotificationIcon = () => {
+  const navigate = useNavigate();
+  const handleNotificationButton = () => {
+    navigate("/notification");
+  };
+
   return (
-    <Button>
+    <Button onClick={handleNotificationButton}>
       <img
         src={NotificationIconImage}
         alt="notification"
