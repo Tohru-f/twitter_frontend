@@ -6,6 +6,7 @@ import { ProfilePage } from "./components/pages/ProfilePage";
 import { LoginUserPage } from "./components/pages/LoginUserPage";
 import { UserDataProvider } from "./components/providers/UserDataProvider";
 import { NotificationPage } from "./components/pages/NotificationPage";
+import { MessagePage } from "./components/pages/MessagePage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/profile" element={<LoginUserPage />} />
           <Route path="/users/:id" element={<ProfilePage />} />
           <Route path="/notification" element={<NotificationPage />} />
+          <Route path="/message" element={<MessagePage />} />
         </Routes>
       </UserDataProvider>
     </>
