@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import MessageIconImage from "../../assets/message.png";
+import { useNavigate } from "react-router-dom";
 
 const Button = styled.button`
   background-color: black;
@@ -27,8 +28,12 @@ const Span = styled.span`
 `;
 
 export const MessageIcon = () => {
+  const navigate = useNavigate();
+  const handleMessageButton = () => {
+    navigate("/message");
+  };
   return (
-    <Button>
+    <Button onClick={handleMessageButton}>
       <img src={MessageIconImage} alt="message" width={30} height={30} />
       <Span>メッセージ</Span>
     </Button>

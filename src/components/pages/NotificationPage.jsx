@@ -3,7 +3,6 @@ import { SideBar } from "../organisms/SideBar";
 import styled from "styled-components";
 import { SearchBar } from "../organisms/SearchBar";
 import { axiosInstance } from "../../utils/HandleAxios";
-import { NotificationMessage } from "../molecules/NotificationMessage";
 
 const NotificationArea = styled.div`
   background-color: black;
@@ -33,6 +32,25 @@ const MessageArea = styled.div`
   padding: 10px 20px 10px 20px;
 `;
 
+const NameAndIconBox = styled.div`
+  display: flex;
+  flex-flow: column;
+`;
+
+const ImageIcon = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+`;
+
+const NameIcon = styled.p`
+  color: white;
+`;
+
+const TweetMessage = styled.div`
+  color: #787878;
+`;
+
 export const NotificationPage = () => {
   // バックエンド側から取得した通知データを保管する変数
   const [notifications, setNotifications] = useState([]);
@@ -47,45 +65,17 @@ export const NotificationPage = () => {
     getNotificationData();
   }, []);
 
-  // 取得した通知データをアクションによって切り替えて表示する
+  // 取得した通知データのアクションによって切り替えて表示するメッセージを切り替える
   const renderMessage = (notification) => {
     switch (notification.action) {
       case "favorite":
-        const messageForFavorite = "さんがあなたの投稿にイイねしました。";
-        return (
-          <NotificationMessage
-            key={notification.id}
-            notification={notification}
-            message={messageForFavorite}
-          />
-        );
+        return "さんがあなたの投稿にイイねしました。";
       case "comment":
-        const messageForComment = "さんがあなたの投稿にコメントしました。";
-        return (
-          <NotificationMessage
-            key={notification.id}
-            notification={notification}
-            message={messageForComment}
-          />
-        );
+        return "さんがあなたの投稿にコメントしました。";
       case "follow":
-        const messageForFollow = "さんがあなたをフォローしました。";
-        return (
-          <NotificationMessage
-            key={notification.id}
-            notification={notification}
-            message={messageForFollow}
-          />
-        );
+        return "さんがあなたをフォローしました。";
       case "retweet":
-        const messageForRetweet = "さんがあなたの投稿をリツイートしました。";
-        return (
-          <NotificationMessage
-            key={notification.id}
-            notification={notification}
-            message={messageForRetweet}
-          />
-        );
+        return "さんがあなたの投稿をリツイートしました。";
     }
   };
 
@@ -95,7 +85,20 @@ export const NotificationPage = () => {
       <MainArea>
         <TitleBar>通知</TitleBar>
         <MessageArea>
-          {notifications.map((notification) => renderMessage(notification))}
+          {notifications.map((notification) => (
+            <div key={notification.id}>
+              <NameAndIconBox>
+                <ImageIcon src={notification.visitor.icon_urls} />
+                <NameIcon>
+                  {notification.visitor.name}
+                  {renderMessage(notification)}
+                </NameIcon>
+              </NameAndIconBox>
+              {notification.tweet && (
+                <TweetMessage>{notification.tweet.content}</TweetMessage>
+              )}
+            </div>
+          ))}
         </MessageArea>
       </MainArea>
       <SearchBar />

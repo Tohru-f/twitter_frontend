@@ -14,6 +14,7 @@ import CalendarImage from "../../assets/calendar.png";
 import dayjs from "dayjs";
 import { axiosInstance } from "../../utils/HandleAxios.jsx";
 import { saveUserDataContext } from "../providers/UserDataProvider.jsx";
+import MessageIconImage from "../../assets/message.png";
 
 const MainSpace = styled.div`
   display: flex;
@@ -123,6 +124,23 @@ const ProfileDummySpace = styled.div`
   border: 3px solid black;
   display: inline-block;
   background-color: #787878;
+`;
+
+const MessageButton = styled.button`
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid white;
+  background-color: black;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-left: 100px;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const EditButton = styled.button`
@@ -324,6 +342,11 @@ export const ProfilePage = () => {
     });
   };
 
+  const handleMessage = async () => {
+    const response = await axiosInstance.post("/groups");
+    console.log(response.data);
+  };
+
   // tweetが空(undefined)の場合はプロフィールメニューからの遷移とみなし、それ以外は投稿データのリンクからの遷移とみなす。
   return (
     <MainSpace>
@@ -350,6 +373,9 @@ export const ProfilePage = () => {
             ) : (
               <ProfileDummySpace />
             )}
+            <MessageButton>
+              <img src={MessageIconImage} />
+            </MessageButton>
             {tweetData.user.followers.some(
               (follower) => follower.id === userInfo.id
             ) ? (
