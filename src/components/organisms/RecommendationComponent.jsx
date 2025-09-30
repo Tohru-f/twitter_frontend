@@ -16,7 +16,9 @@ import Retweet_notyet from "../../assets/retweet-notyet.png";
 import Favorite_notyet from "../../assets/favorite-notyet.png";
 import Favorite_done from "../../assets/favorite-done.png";
 import LikeImage from "../../assets/like.png";
-import NotBookmarkImage from "../../assets/not_bookmark.png";
+// import NotBookmarkImage from "../../assets/not_bookmark.png";
+import Bookmark_notyet from "../../assets/bookmark-notyet.png";
+import Bookmark_done from "../../assets/bookmark-done.png";
 import { axiosInstance } from "../../utils/HandleAxios";
 
 // 投稿日の表示を現在の日付から「何日前」で表示する
@@ -353,6 +355,22 @@ export const RecommendationComponent = ({
   // コンポーネント内で使用する変数。イイねのアイコン表示に関してsome関数の結果を代入する
   let favorite_done;
 
+  const handleBookmark = async (id) => {
+    const response = await axiosInstance.post("/bookmarks", {
+      tweet_id: id,
+    });
+    console.log(response.data);
+    // state変数を反対の値に切り替えることで再レンダリングを誘発する
+    setUpdate(update ? false : true);
+  };
+
+  const handleBookmarkDelete = async (id) => {
+    const response = await axiosInstance.delete(`/bookmarks/${id}`);
+    console.log(response.data);
+    // state変数を反対の値に切り替えることで再レンダリングを誘発する
+    setUpdate(update ? false : true);
+  };
+
   return (
     <>
       {isLoading && <h2>Now Loading...</h2>}
@@ -472,7 +490,28 @@ export const RecommendationComponent = ({
                   <NumberPlate>{tweet.favorites.length}</NumberPlate>
                 )}
               </IconAndNumber>
-              <IconImage src={NotBookmarkImage} />
+              <IconAndNumber>
+                {!!tweet.bookmarks ? (
+                  tweet.bookmarks.some(
+                    (bookmark) => bookmark.user.id === userInfo.id
+                  ) ? (
+                    <IconImage
+                      src={Bookmark_done}
+                      onClick={() => handleBookmarkDelete(tweet.id)}
+                    />
+                  ) : (
+                    <IconImage
+                      src={Bookmark_notyet}
+                      onClick={() => handleBookmark(tweet.id)}
+                    />
+                  )
+                ) : (
+                  <IconImage
+                    src={Bookmark_notyet}
+                    onClick={() => handleBookmark(tweet.id)}
+                  />
+                )}
+              </IconAndNumber>
             </IconsBox>
           </div>
         ))}
