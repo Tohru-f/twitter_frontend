@@ -34,6 +34,8 @@ export const MainPages = () => {
   const closeCommentModal = () => setShowCommentModal(false);
   // コメントモーダルで表示するためのツイートを管理
   const [tweetForComment, setTweetForComment] = useState("");
+  // 表示する投稿データの管理
+  const [tweets, setTweets] = useState([]);
 
   return (
     <MainSpace>
@@ -51,12 +53,16 @@ export const MainPages = () => {
         openCommentModal={openCommentModal}
         setTweetForComment={setTweetForComment}
         tweetForComment={tweetForComment}
+        tweets={tweets}
+        setTweets={setTweets}
       />
       <SearchBar />
       <CommentModal
         close={closeCommentModal}
         show={showCommentModal}
-        tweet={tweetForComment}
+        tweetForComment={tweetForComment}
+        setTweets={setTweets}
+        tweets={tweets}
       />
     </MainSpace>
   );

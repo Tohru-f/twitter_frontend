@@ -7,6 +7,7 @@ import { LoginUserPage } from "./components/pages/LoginUserPage";
 import { UserDataProvider } from "./components/providers/UserDataProvider";
 import { NotificationPage } from "./components/pages/NotificationPage";
 import { MessagePage } from "./components/pages/MessagePage";
+import { BookmarkPage } from "./components/pages/BookmarkPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/users/:id" element={<ProfilePage />} />
           <Route path="/notification" element={<NotificationPage />} />
           <Route path="/message" element={<MessagePage />} />
+          <Route path="/bookmark" element={<BookmarkPage />} />
         </Routes>
       </UserDataProvider>
     </>

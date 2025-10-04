@@ -75,7 +75,13 @@ const SendButton = styled.button`
   float: right;
 `;
 
-export const CommentModal = ({ close, show, tweet }) => {
+export const CommentModal = ({
+  close,
+  show,
+  tweetForComment,
+  setTweets,
+  tweets,
+}) => {
   // コメントの内容を管理
   const [comment, setComment] = useState("");
 
@@ -103,9 +109,22 @@ export const CommentModal = ({ close, show, tweet }) => {
   const handleCommentSend = async () => {
     const response = await axiosInstance.post("/comments", {
       content: comment,
-      tweet_id: tweet.id,
+      tweet_id: tweetForComment.id,
     });
     console.log(response.data);
+    // state変数を更新することで再レンダリングを誘発し、表示されているコメント数をリアルタイムに変更する
+    setTweets(
+      tweets.map((tweet) => {
+        if (tweet.id === tweetForComment.id) {
+          return {
+            ...tweet,
+            comments: [...tweet.comments, response.data.data.comment],
+          };
+        } else {
+          return tweet;
+        }
+      })
+    );
     setComment("");
     close();
   };
@@ -116,7 +135,7 @@ export const CommentModal = ({ close, show, tweet }) => {
       <Overlay onClick={close}></Overlay>
       <Modal>
         <CloseButton onClick={close}>×</CloseButton>
-        <TweetMessage>{tweet.content}</TweetMessage>
+        <TweetMessage>{tweetForComment.content}</TweetMessage>
         <CommentInput
           placeholder="返信をポスト"
           onChange={handleCommentChange}

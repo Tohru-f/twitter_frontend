@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import BookmarkIconImage from "../../assets/bookmark.png";
+import { useNavigate } from "react-router-dom";
 
 const Button = styled.button`
   background-color: black;
@@ -27,8 +28,12 @@ const Span = styled.span`
 `;
 
 export const BookmarkIcon = () => {
+  const navigate = useNavigate();
+  const handleBookmarkButton = () => {
+    navigate("/bookmark");
+  };
   return (
-    <Button>
+    <Button onClick={handleBookmarkButton}>
       <img src={BookmarkIconImage} alt="home" width={30} height={30} />
       <Span>ブックマーク</Span>
     </Button>

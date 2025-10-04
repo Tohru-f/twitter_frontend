@@ -16,7 +16,9 @@ import Retweet_notyet from "../../assets/retweet-notyet.png";
 import Favorite_notyet from "../../assets/favorite-notyet.png";
 import Favorite_done from "../../assets/favorite-done.png";
 import LikeImage from "../../assets/like.png";
-import NotBookmarkImage from "../../assets/not_bookmark.png";
+// import NotBookmarkImage from "../../assets/not_bookmark.png";
+import Bookmark_notyet from "../../assets/bookmark-notyet.png";
+import Bookmark_done from "../../assets/bookmark-done.png";
 import { axiosInstance } from "../../utils/HandleAxios";
 
 // 投稿日の表示を現在の日付から「何日前」で表示する
@@ -138,19 +140,17 @@ export const RecommendationComponent = ({
   setTweetForComment,
   showCommentModal,
   tweetForComment,
+  tweets,
+  setTweets,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [tweets, setTweets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalTweets, setTotalTweets] = useState(0);
 
   // グローバルステートのログインユーザーを取得
   const { userInfo } = useContext(saveUserDataContext);
-
-  // 再レンダリングを誘発させるためのstate変数
-  const [update, setUpdate] = useState(false);
 
   // newOffset, newPage, maxPagesはstate変数のままで管理するとレンダリングできないので、ローカル変数を使用
   let maxPages = Math.ceil(totalTweets / 10);
@@ -164,11 +164,11 @@ export const RecommendationComponent = ({
   const [currentPage, setCurrentPage] = useState(null);
   let newPage;
 
-  // 初回レンダリング時、page変更時の投稿データを取得する。コメント投稿後にも動かす
+  // 初回レンダリング時、page変更時の投稿データを取得する。
   useEffect(() => {
     setCurrentPage(page);
     describeDesignatedTweet(page);
-  }, [page, showCommentModal, update]);
+  }, [page]);
 
   // 現在のページから一つ前のページへ遷移する
   const describePrevTweet = async () => {
@@ -319,16 +319,40 @@ export const RecommendationComponent = ({
   const handleRetweet = async (id) => {
     const response = await axiosInstance.post(`/tweets/${id}/retweets`);
     console.log(response.data);
-    // state変数を反対の値に切り替えることで再レンダリングを誘発する
-    setUpdate(update ? false : true);
+    // state変数を更新することで再レンダリングを誘発し、リツイートアイコンを切り替える
+    setTweets(
+      tweets.map((tweet) => {
+        if (tweet.id === id) {
+          return {
+            ...tweet,
+            retweets: [...tweet.retweets, response.data.data.retweet],
+          };
+        } else {
+          return tweet;
+        }
+      })
+    );
   };
 
   // リツイート削除を管理
   const handleDeleteRetweet = async (id) => {
     const response = await axiosInstance.delete(`/tweets/${id}/retweets`);
     console.log(response.data);
-    // state変数を反対の値に切り替えることで再レンダリングを誘発する
-    setUpdate(update ? false : true);
+    // state変数を更新することで再レンダリングを誘発し、リツイートアイコンを切り替える
+    setTweets(
+      tweets.map((tweet) => {
+        if (tweet.id === id) {
+          return {
+            ...tweet,
+            retweets: tweet.retweets.filter(
+              (retweet) => retweet.user.id !== userInfo.id
+            ),
+          };
+        } else {
+          return tweet;
+        }
+      })
+    );
   };
 
   // コンポーネント内で使用する変数。リツイートのアイコン表示に関してsome関数の結果を代入する
@@ -338,20 +362,84 @@ export const RecommendationComponent = ({
   const handleFavorite = async (id) => {
     const response = await axiosInstance.post(`/tweets/${id}/favorites`);
     console.log(response.data);
-    // state変数を反対の値に切り替えることで再レンダリングを誘発する
-    setUpdate(update ? false : true);
+    // state変数を更新することで再レンダリングを誘発し、イイねアイコンを切り替える
+    setTweets(
+      tweets.map((tweet) => {
+        if (tweet.id === id) {
+          return {
+            ...tweet,
+            favorites: [...tweet.favorites, response.data.data.favorite],
+          };
+        } else {
+          return tweet;
+        }
+      })
+    );
   };
 
   // イイね削除を管理
   const handleDeleteFavorite = async (id) => {
     const response = await axiosInstance.delete(`/tweets/${id}/favorites`);
     console.log(response.data);
-    // state変数を反対の値に切り替えることで再レンダリングを誘発する
-    setUpdate(update ? false : true);
+    // state変数を更新することで再レンダリングを誘発し、イイねアイコンを切り替える
+    setTweets(
+      tweets.map((tweet) => {
+        if (tweet.id === id) {
+          return {
+            ...tweet,
+            favorites: tweet.favorites.filter(
+              (favorite) => favorite.user.id !== userInfo.id
+            ),
+          };
+        } else {
+          return tweet;
+        }
+      })
+    );
   };
 
   // コンポーネント内で使用する変数。イイねのアイコン表示に関してsome関数の結果を代入する
   let favorite_done;
+
+  const handleBookmark = async (id) => {
+    const response = await axiosInstance.post("/bookmarks", {
+      tweet_id: id,
+    });
+    console.log(response.data);
+    // state変数を更新することで再レンダリングを誘発しブックマークアイコンを切り替える
+    setTweets(
+      tweets.map((tweet) => {
+        if (tweet.id === id) {
+          return {
+            ...tweet,
+            bookmarks: [...tweet.bookmarks, response.data.data.bookmark],
+          };
+        } else {
+          return tweet;
+        }
+      })
+    );
+  };
+
+  const handleBookmarkDelete = async (id) => {
+    const response = await axiosInstance.delete(`/bookmarks/${id}`);
+    console.log(response.data);
+    // state変数を更新することで再レンダリングを誘発しブックマークアイコンを切り替える
+    setTweets(
+      tweets.map((tweet) => {
+        if (tweet.id === id) {
+          return {
+            ...tweet,
+            bookmarks: tweet.bookmarks.filter(
+              (bookmark) => bookmark.user.id !== userInfo.id
+            ),
+          };
+        } else {
+          return tweet;
+        }
+      })
+    );
+  };
 
   return (
     <>
@@ -472,7 +560,28 @@ export const RecommendationComponent = ({
                   <NumberPlate>{tweet.favorites.length}</NumberPlate>
                 )}
               </IconAndNumber>
-              <IconImage src={NotBookmarkImage} />
+              <IconAndNumber>
+                {!!tweet.bookmarks ? (
+                  tweet.bookmarks.some(
+                    (bookmark) => bookmark.user.id === userInfo.id
+                  ) ? (
+                    <IconImage
+                      src={Bookmark_done}
+                      onClick={() => handleBookmarkDelete(tweet.id)}
+                    />
+                  ) : (
+                    <IconImage
+                      src={Bookmark_notyet}
+                      onClick={() => handleBookmark(tweet.id)}
+                    />
+                  )
+                ) : (
+                  <IconImage
+                    src={Bookmark_notyet}
+                    onClick={() => handleBookmark(tweet.id)}
+                  />
+                )}
+              </IconAndNumber>
             </IconsBox>
           </div>
         ))}

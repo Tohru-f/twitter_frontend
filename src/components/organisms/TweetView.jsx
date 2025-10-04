@@ -25,6 +25,8 @@ export const TweetView = ({
   setTweetForComment,
   showCommentModal,
   tweetForComment,
+  tweets,
+  setTweets,
 }) => {
   // タブの切り替えを管理するstate変数
   const [activeTab, setActiveTab] = useState("recommendation");
@@ -44,6 +46,8 @@ export const TweetView = ({
           setTweetForComment={setTweetForComment}
           showCommentModal={showCommentModal}
           tweetForComment={tweetForComment}
+          tweets={tweets}
+          setTweets={setTweets}
         />
       )}
       {activeTab === "follow" && <FollowComponent />}
