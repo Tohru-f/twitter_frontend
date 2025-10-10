@@ -8,6 +8,7 @@ import { ProfileIcon } from "../atoms/ProfileIcon";
 import { XHomeIcon } from "../atoms/XHomeIcon";
 import { SignOutIcon } from "../atoms/SignOutIcon";
 import { RaisePostModalIcon } from "../atoms/RaisePostModalIcon";
+import { DiscardAccount } from "../atoms/DiscardAccount";
 
 const SideSpace = styled.div`
   background-color: black;
@@ -23,7 +24,7 @@ const SidePart = styled.div`
   width: 45%;
 `;
 
-export const SideBar = ({ openPostModalHandler }) => {
+export const SideBar = ({ openPostModalHandler, openWithdrawalModal }) => {
   return (
     <SideSpace>
       <SidePart>
@@ -33,6 +34,7 @@ export const SideBar = ({ openPostModalHandler }) => {
         <MessageIcon />
         <BookmarkIcon />
         <ProfileIcon />
+        <DiscardAccount open={openWithdrawalModal} />
         <RaisePostModalIcon
           width="200px"
           openPostModalHandler={openPostModalHandler}

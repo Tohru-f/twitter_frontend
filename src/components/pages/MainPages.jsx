@@ -4,6 +4,7 @@ import { SideBar } from "../organisms/SideBar";
 import { TweetView } from "../organisms/TweetView";
 import { SearchBar } from "../organisms/SearchBar";
 import { CommentModal } from "../organisms/CommentModal";
+import { WithdrawalConfirmModal } from "../organisms/WithdrawalConfirmModal";
 
 const MainSpace = styled.div`
   background-color: black;
@@ -36,12 +37,19 @@ export const MainPages = () => {
   const [tweetForComment, setTweetForComment] = useState("");
   // 表示する投稿データの管理
   const [tweets, setTweets] = useState([]);
+  // 退会確認用のモーダルを管理するstate変数
+  const [showWithdrawalModal, setShowWithdrawalModal] = useState(false);
+  // 退会確認用のモーダルを表示に切り替える
+  const openWithdrawalModal = () => setShowWithdrawalModal(true);
+  // 退会確認用のモーダルを非常時に切り替える
+  const closeWithdrawalModal = () => setShowWithdrawalModal(false);
 
   return (
     <MainSpace>
       <SideBar
         openPostModalHandler={openPostModalHandler}
         openProfileModalHandler={openProfileModalHandler}
+        openWithdrawalModal={openWithdrawalModal}
       />
       <TweetView
         showPostModal={showPostModal}
@@ -63,6 +71,10 @@ export const MainPages = () => {
         tweetForComment={tweetForComment}
         setTweets={setTweets}
         tweets={tweets}
+      />
+      <WithdrawalConfirmModal
+        show={showWithdrawalModal}
+        close={closeWithdrawalModal}
       />
     </MainSpace>
   );
